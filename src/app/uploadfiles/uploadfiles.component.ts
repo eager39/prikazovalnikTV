@@ -28,8 +28,12 @@ export class UploadfilesComponent implements OnInit {
     red: new FormControl(''),
   })
   itemsForm = new FormGroup({
-    red: new FormControl(''),
+    ord: new FormControl(''),
     tv:new FormControl("")
+  })
+  tvsForm = new FormGroup({
+    name: new FormControl(''),
+    location: new FormControl(''),
   })
 
 
@@ -48,7 +52,7 @@ export class UploadfilesComponent implements OnInit {
       data => {
         console.log(data);
        this.items=data
-        console.log(this.videos)
+       
       }
     )
   }
@@ -60,7 +64,7 @@ export class UploadfilesComponent implements OnInit {
 
   ngOnInit() {
    // this.allImageVideo()
-
+this.getTVs()
   }
   deleteImg(id,name){
     
@@ -162,8 +166,9 @@ export class UploadfilesComponent implements OnInit {
 
   onSubmit() {
     const formModel = this.form.value;
+    console.log(formModel)
     this.loading = true;
-    this._dataService.add(formModel,"image").subscribe(
+    this._dataService.add({"item":this.form.value.avatar,"tvid":this.itemsForm.value.tv},"image").subscribe(
       data => {
         
           if(data){
@@ -186,28 +191,34 @@ export class UploadfilesComponent implements OnInit {
   }
  async updateImgRed(id,value){
    
-    if(value && isNumber(value)){ 
+    
        let result=await this._dataService.add({"id":id,"red":value},"updateImgRed").toPromise()
       console.log(result)
       if(result){
         this.allImageVideo(this.selectedtv);
         this.show="";
-      }
+      
     }
   
   }
-  async updateVidRed(id,value){
+  async addTVs(){
+    
+     var form=this.tvsForm.value;
+   var data=await this._dataService.add(form,"addTVs").toPromise()
+       if(data){
+         alert("uspešno dodana naprava")
+       }
+     
+ 
+     
    
-    if(value && isNumber(value)){ 
-       let result=await this._dataService.add({"id":id,"red":value},"updateVidRed").toPromise()
-      console.log(result)
-      if(result){
-        this.allImageVideo(this.selectedtv);
-        this.show="";
-      }
-    }
-  
-  }
+ }
+ 
+ async getTVs(){
+  var data=await this._dataService.get("getTVs").toPromise()
+  this.tvs=data
+  console.log(this.tvs)
+ }
 
   clearFile() {
     this.form.get('avatar').setValue(null);

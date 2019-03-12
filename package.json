@@ -36,6 +36,7 @@
     "jquery": "^3.3.1",
     "ng2-pdf-viewer": "^5.2.3",
     "rxjs": "~6.3.3",
+    "simple-pdf-viewer": "^2.0.3",
     "tslib": "^1.9.0",
     "ui-carousel": "^0.2.0",
     "zone.js": "^0.8.29"

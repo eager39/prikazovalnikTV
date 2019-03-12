@@ -96,7 +96,7 @@ app.get('/data',cors(), function(req, res) {
    connection.query(sql,[id], function(err, results) {
       if (err) throw err
       data = results;
-      
+      var type;
       function getImage(image) {
          
         return new Promise((resolve, reject) => { 
@@ -116,17 +116,29 @@ app.get('/data',cors(), function(req, res) {
             }
             
          }
+         for (var i = 0; i < data.length; i++) {
+            if(data[i].type=="pdf"){
+               promises.push(getImage(data[i]));
+            }
+            
+         }
          // return promise that is resolved when all images are done loading
          return Promise.all(promises);
       }
 
       getAllImages().then(function(imageArray) {
          for (var i = 0; i < imageArray.length; i++) {
+            if(data[i].type=="image"){
+               type="image"
+            }else if(data[i].type=="pdf"){
+               type="pdf"
+            }
+            
             slike.push({
                "slika": imageArray[i].toString("base64"),
                "name":data[i].name,
-               "type":"image",
-               "red":data[i].ord
+               "type":type,
+               "ord":data[i].ord
             })
          }
          for(var j=0;j<data.length;j++){
@@ -134,7 +146,7 @@ app.get('/data',cors(), function(req, res) {
                slike.push({
                "name":data[j].name,
                "type":"video",
-               "red":data[j].ord
+               "ord":data[j].ord
             })
             }
             
@@ -156,23 +168,31 @@ app.get('/data',cors(), function(req, res) {
 });
 
 app.post("/image", function(request, response) {
-   if (!request.body.avatar) {
+   console.log(request.body.item)
+   if (!request.body.item.value) {
       response.json(false)
       return false;
    } 
-   var filename = request.body.avatar.filename;
-   var image = request.body.avatar.value;
-   var filetype = request.body.avatar.filetype;
-   var display=request.body.display
-  
-   if (filetype.includes("video")) {
+   var filename = request.body.item.filename;
+   var image = request.body.item.value;
+   var filetype = request.body.item.filetype;
+   var display=request.body.tvid
+   var customtype;
+  console.log(filetype)
+   if(filetype.includes("video")){
+customtype="video"
+   }else if(filetype.includes("image")){
+      customtype="image"
+   }else if(filetype.includes("pdf")){
+      customtype="pdf"
+   }
       try {
          fs.writeFile(__dirname+"/upload/" + filename, image, "base64", function(err) {
             if (err) {
                return console.log(err);
             }
             var sql = "INSERT INTO items (name,active,type,display) VALUES (?,?,?,?)";
-            connection.query(sql, [filename, 1,"video",display], function(err, results) {
+            connection.query(sql, [filename, 1,customtype,display], function(err, results) {
                 console.log(results)
                if(!err){
                   console.log("The file was saved!");
@@ -188,38 +208,35 @@ app.post("/image", function(request, response) {
       } catch (err) {
 
       }
-   } else if (filetype.includes("image")) {
+  
    
-      try {
-         fs.writeFile(__dirname+"/upload/" + filename, image, "base64", function(err) {
-            if (err) {
-               return console.log(err);
-            }
-            var sql = "INSERT INTO items (name,active,type,display) VALUES (?,?,?,?)";
-            connection.query(sql, [filename, 1,"image",display], function(err, results) {
-               if(!err){
-                  console.log("The file was saved!");
-               response.json(true);
-               }else{
-                  console.log(results)
-                  throw err
-               }
-               
-            });
-         });
-
-      } catch (err) {
-
-      }
-   } else {
-      response.json(false)
-   }
+     
+  
 
 });
+
+app.post("/addTVs",function(request,response){
+var name=request.body.name
+var location=request.body.location
+var sql = "INSERT INTO displays (name,location) VALUES (?,?)";
+connection.query(sql, [name, location], function(err, results) {
+   if(!err){
+      response.status(200).json(true)
+   }
+})
+})
 app.get("tvs",function(request,response){
    
 })
-
+app.get("/getTVs",function(request,response){
+   var sql = "SELECT * FROM displays";
+   connection.query(sql, function(err, results) {
+      if (!err) {
+         response.status(200).json(results)
+      }
+      
+})
+})
 
 app.post('/auth', function(request, response) {
 
@@ -364,9 +381,15 @@ app.post("/updateImgRed", function(request, response) {
 
    var id = request.body.id
    var red = request.body.red
+  if(red=="+"){
+   var sql = "UPDATE items set ord=ord + 1 WHERE id=?"
+   
+  }else{
+   var sql = "UPDATE items set ord=ord - 1 WHERE id=?"
+  }
    console.log(red)
-   var sql = "UPDATE items set ord=? WHERE id=?"
-   connection.query(sql, [red, id], function(err, results) {
+  
+   connection.query(sql, [ id], function(err, results) {
       if (!err) {
          console.log(results)
          response.json(true);

@@ -1,9 +1,9 @@
-<form [formGroup]="form" (ngSubmit)="onSubmit()">
+<form [formGroup]="form" *ngIf="itemsForm.value.tv" (ngSubmit)="onSubmit()">
   
     <div class="form-group">
       <label for="avatar">Slika / video</label>
-      <input type="text" formControlName="display">
-      <input type="file" id="avatar" accept="video/*,image/*" (change)="onFileChange($event)" #fileInput>
+    
+      <input type="file" id="avatar"  (change)="onFileChange($event)" #fileInput>
       <button type="button" class="btn btn-sm btn-default" (click)="clearFile()">Pobrisi datoteko</button>
     </div>
     <button type="submit" [disabled]="form.invalid || loading" class="btn btn-success">Naloži <i class="fa fa-spinner fa-spin fa-fw" *ngIf="loading"></i></button>
@@ -31,19 +31,26 @@
     </ul>
   </form>-->
   
-  <form [formGroup]="itemsForm">
-    <select formControlName="tv" (change)="izbranitv()">
-      <option value="1">1</option>
-      <option value="2">2</option>
-      <option value="3">3</option>
-      <option value="4">4</option>
-    </select>
+  <form [formGroup]="itemsForm" (keydown.enter)="$event.preventDefault()">
+
+      <select formControlName="tv" (change)="izbranitv()">
+          <option *ngFor="let tv of tvs" [value]="tv.id">{{tv.name}}</option>
+        </select>
+
       <ul *ngIf="items">
 <ng-container *ngFor="let item of items">
           <li  >
             
-           Ime: {{item.name}} ,aktivno: {{item.active}} ,Vrstni red:<span  >{{item.ord}}</span><input type="number" *ngIf="show==item.id" (change)="updateImgRed(item.id,itemsForm.value.red)" value="{{item.red}}"  formControlName="red">  <button (click)="showhideImg(item)" class="btn btn-success">Prikazi/skrij</button><button (click)="deleteImg(item.id,item.name)" class="btn btn-success">zbrisi</button><button (click)="edit(item.id)" class="btn btn-success">Spremeni vrsti red</button>
+           Ime: {{item.name}} ,aktivno: {{item.active}} ,Vrstni red:<span  >{{item.ord}}</span><input type="number" *ngIf="show==item.id" (change)="updateImgRed(item.id,itemsForm.value.ord)" value="{{item.ord}}"  formControlName="ord">  <button (click)="showhideImg(item)" class="btn btn-success">Prikazi/skrij</button><button (click)="deleteImg(item.id,item.name)" class="btn btn-success">zbrisi</button><button (click)="updateImgRed(item.id,'+')" class="btn btn-success">+</button><button (click)="updateImgRed(item.id,'-')" class="btn btn-success">-</button>
           </li></ng-container>
       </ul>
     </form>
   <button routerLink="/home">Domov</button>
+
+  <form [formGroup]="tvsForm">
+Ime naprave:<input formControlName="name" type="text">
+Lokacija:<input formControlName="location" type="text">
+<button class="form-control" (click)="addTVs()" type="submit" >Dodaj</button>
+
+
+    </form>

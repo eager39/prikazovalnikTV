@@ -18,6 +18,8 @@ import { ReactiveFormsModule } from '@angular/forms';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import { MDBBootstrapModule } from 'angular-bootstrap-md';
 import { UploadfilesComponent } from './uploadfiles/uploadfiles.component';
+import { SimplePdfViewerModule } from 'simple-pdf-viewer';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -37,7 +39,8 @@ import { UploadfilesComponent } from './uploadfiles/uploadfiles.component';
     MatInputModule,
     MatFormFieldModule,
     NgbModule,
-    MDBBootstrapModule.forRoot()
+    MDBBootstrapModule.forRoot(),
+    SimplePdfViewerModule
 
 
   ],

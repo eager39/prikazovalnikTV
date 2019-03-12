@@ -72,14 +72,14 @@ console.log(this.tvid)
    
     function compare(a, b) {
       // Use toUpperCase() to ignore character casing
-      const genreA = a.red;
-      const genreB = b.red;
+      const genreA = a.ord;
+      const genreB = b.ord;
     
       let comparison = 0;
       if (genreA > genreB) {
-        comparison = 1;
-      } else if (genreA < genreB) {
         comparison = -1;
+      } else if (genreA < genreB) {
+        comparison = 1;
       }
       return comparison;
     }
