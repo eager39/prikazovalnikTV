@@ -2,6 +2,7 @@
   
     <div class="form-group">
       <label for="avatar">Slika / video</label>
+      <input type="text" formControlName="display">
       <input type="file" id="avatar" accept="video/*,image/*" (change)="onFileChange($event)" #fileInput>
       <button type="button" class="btn btn-sm btn-default" (click)="clearFile()">Pobrisi datoteko</button>
     </div>
@@ -10,7 +11,7 @@
     <ng-container *ngIf="napaka">Napaka </ng-container>
   </form>
 
-
+<!--
   <form [formGroup]="imageForm">
 <h1>slike</h1>
   <ul *ngIf="images">
@@ -28,5 +29,21 @@
          </li>
 
     </ul>
-  </form>
+  </form>-->
+  
+  <form [formGroup]="itemsForm">
+    <select formControlName="tv" (change)="izbranitv()">
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+      <option value="4">4</option>
+    </select>
+      <ul *ngIf="items">
+<ng-container *ngFor="let item of items">
+          <li  >
+            
+           Ime: {{item.name}} ,aktivno: {{item.active}} ,Vrstni red:<span  >{{item.ord}}</span><input type="number" *ngIf="show==item.id" (change)="updateImgRed(item.id,itemsForm.value.red)" value="{{item.red}}"  formControlName="red">  <button (click)="showhideImg(item)" class="btn btn-success">Prikazi/skrij</button><button (click)="deleteImg(item.id,item.name)" class="btn btn-success">zbrisi</button><button (click)="edit(item.id)" class="btn btn-success">Spremeni vrsti red</button>
+          </li></ng-container>
+      </ul>
+    </form>
   <button routerLink="/home">Domov</button>

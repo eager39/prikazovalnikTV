@@ -36,7 +36,7 @@ app.use(bodyParser.json({
 
 
 app.get('/video/:id',cors(), function(req, res) {
-   var sql = "SELECT id,name,active FROM video WHERE name=? ";
+   var sql = "SELECT id,name,active,type FROM items WHERE name=? ";
   
 
    
@@ -85,20 +85,18 @@ app.get('/video/:id',cors(), function(req, res) {
 
 app.get('/data',cors(), function(req, res) {
 
-   
+   var id=req.query.id
  
 
 
 
    var slike = [];
    var data;
-   var sql = 'SELECT id,name,active,type,red FROM image WHERE active=1;SELECT * FROM video where active=1';
-   connection.query(sql, function(err, results) {
+   var sql = 'SELECT id,name,active,type,ord FROM items WHERE active=1 and display=?';
+   connection.query(sql,[id], function(err, results) {
       if (err) throw err
-      data = results[0];
-      videos=results[1];
-    
-
+      data = results;
+      
       function getImage(image) {
          
         return new Promise((resolve, reject) => { 
@@ -113,7 +111,10 @@ app.get('/data',cors(), function(req, res) {
          var promises = [];
          // load all images in parallel
          for (var i = 0; i < data.length; i++) {
-            promises.push(getImage(data[i]));
+            if(data[i].type=="image"){
+               promises.push(getImage(data[i]));
+            }
+            
          }
          // return promise that is resolved when all images are done loading
          return Promise.all(promises);
@@ -125,16 +126,18 @@ app.get('/data',cors(), function(req, res) {
                "slika": imageArray[i].toString("base64"),
                "name":data[i].name,
                "type":"image",
-               "red":data[i].red
+               "red":data[i].ord
             })
          }
-         for(var j=0;j<videos.length;j++){
-            
-            slike.push({
-               "name":videos[j].name,
+         for(var j=0;j<data.length;j++){
+            if(data[j].type=="video"){
+               slike.push({
+               "name":data[j].name,
                "type":"video",
-               "red":videos[j].red
+               "red":data[j].ord
             })
+            }
+            
          }
          
         
@@ -156,20 +159,29 @@ app.post("/image", function(request, response) {
    if (!request.body.avatar) {
       response.json(false)
       return false;
-   }
+   } 
    var filename = request.body.avatar.filename;
    var image = request.body.avatar.value;
    var filetype = request.body.avatar.filetype;
+   var display=request.body.display
+  
    if (filetype.includes("video")) {
       try {
          fs.writeFile(__dirname+"/upload/" + filename, image, "base64", function(err) {
             if (err) {
                return console.log(err);
             }
-            var sql = "INSERT INTO video (name,active) VALUES (?,?)";
-            connection.query(sql, [filename, 1], function(err, results) {
-               console.log("The file was saved!");
+            var sql = "INSERT INTO items (name,active,type,display) VALUES (?,?,?,?)";
+            connection.query(sql, [filename, 1,"video",display], function(err, results) {
+                console.log(results)
+               if(!err){
+                  console.log("The file was saved!");
+                 
                response.json(true);
+               }else{
+                  response.json(false)
+               }
+               
             });
          });
 
@@ -177,15 +189,22 @@ app.post("/image", function(request, response) {
 
       }
    } else if (filetype.includes("image")) {
+   
       try {
          fs.writeFile(__dirname+"/upload/" + filename, image, "base64", function(err) {
             if (err) {
                return console.log(err);
             }
-            var sql = "INSERT INTO image (name,active) VALUES (?,?)";
-            connection.query(sql, [filename, 1], function(err, results) {
-               console.log("The file was saved!");
+            var sql = "INSERT INTO items (name,active,type,display) VALUES (?,?,?,?)";
+            connection.query(sql, [filename, 1,"image",display], function(err, results) {
+               if(!err){
+                  console.log("The file was saved!");
                response.json(true);
+               }else{
+                  console.log(results)
+                  throw err
+               }
+               
             });
          });
 
@@ -197,7 +216,9 @@ app.post("/image", function(request, response) {
    }
 
 });
-
+app.get("tvs",function(request,response){
+   
+})
 
 
 app.post('/auth', function(request, response) {
@@ -231,9 +252,9 @@ app.post('/auth', function(request, response) {
 
 });
 app.get("/uredi", function(request, response) {
-
-   var sql = "SELECT id,name,active,red FROM image;SELECT * FROM video"
-   connection.query(sql, function(err, results) {
+ 
+   var sql = "SELECT id,name,active,type,ord,display FROM items WHERE display=? ORDER BY ord asc"
+   connection.query(sql,[request.query.id], function(err, results) {
      
       response.json(results)
    })
@@ -245,7 +266,7 @@ app.post("/deleteImg", function(request, response) {
 
    var id = request.body.id
    var name = request.body.name
-   var sql = "DELETE FROM image WHERE id=?"
+   var sql = "DELETE FROM items WHERE id=?"
    connection.query("START TRANSACTION")
    connection.query(sql, [id], function(err, results) {
       if (!err) {
@@ -280,7 +301,7 @@ app.post("/showhideImg", function(request, response) {
 
    var id = request.body.id
    var active = request.body.active
-   var sql = "UPDATE image set active=? WHERE id=?"
+   var sql = "UPDATE items set active=? WHERE id=?"
    connection.query(sql, [active, id], function(err, results) {
       if (!err) {
          response.json(true);
@@ -294,7 +315,7 @@ app.post("/showhideVid", function(request, response) {
 
    var id = request.body.id
    var active = request.body.active
-   var sql = "UPDATE video set active=? WHERE id=?"
+   var sql = "UPDATE items set active=? WHERE id=?"
    connection.query(sql, [active, id], function(err, results) {
       if (!err) {
          response.json(true);
@@ -308,7 +329,7 @@ app.post("/deleteVid", function(request, response) {
 
    var id = request.body.id
    var name=request.body.name
-   var sql = "DELETE FROM video WHERE id=?"
+   var sql = "DELETE FROM items WHERE id=?"
    connection.query(sql, [id], function(err, results) {
       if (!err) {
 
@@ -344,7 +365,7 @@ app.post("/updateImgRed", function(request, response) {
    var id = request.body.id
    var red = request.body.red
    console.log(red)
-   var sql = "UPDATE image set red=? WHERE id=?"
+   var sql = "UPDATE items set ord=? WHERE id=?"
    connection.query(sql, [red, id], function(err, results) {
       if (!err) {
          console.log(results)
@@ -360,7 +381,7 @@ app.post("/updateVidRed", function(request, response) {
    var id = request.body.id
    var red = request.body.red
    console.log(red)
-   var sql = "UPDATE video set red=? WHERE id=?"
+   var sql = "UPDATE items set ord=? WHERE id=?"
    connection.query(sql, [red, id], function(err, results) {
       if (!err) {
          console.log(results)

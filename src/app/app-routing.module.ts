@@ -12,12 +12,12 @@ const routes: Routes = [
     path:"home",
     component:HomeComponent,
   },
-
-  
   {
-    path:"",
-    component:HomeComponent
+    path:"home/:id",
+    component:HomeComponent,
   },
+
+ 
   {
     path:"login",
     component:LoginComponent
@@ -27,7 +27,12 @@ const routes: Routes = [
     component:UploadfilesComponent,
    
     
-  },{
+  }, 
+  {
+    path:"",
+    component:HomeComponent
+  },
+  {
     path:"**",
     component:HomeComponent
   }

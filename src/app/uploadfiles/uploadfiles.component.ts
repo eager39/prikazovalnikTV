@@ -17,6 +17,9 @@ export class UploadfilesComponent implements OnInit {
   images;
   videos;
   show;
+  items;
+  selectedtv;
+  tvs;
   @ViewChild('fileInput') fileInput: ElementRef;
   constructor(private fb: FormBuilder,  private _dataService: ApiDataService,) {
     this.createForm();
@@ -24,32 +27,40 @@ export class UploadfilesComponent implements OnInit {
   imageForm = new FormGroup({
     red: new FormControl(''),
   })
-  videoForm = new FormGroup({
+  itemsForm = new FormGroup({
     red: new FormControl(''),
+    tv:new FormControl("")
   })
 
 
   createForm() {
     this.form = this.fb.group({
       
-      avatar: null
+      avatar: null,
+      display:new FormControl("")
     });
   }
-  allImageVideo(){
-    this._dataService.get("uredi").subscribe(
+  allImageVideo(tv){
+    this._dataService.get("uredi",{ 
+      params: {
+        id:tv
+      } }).subscribe(
       data => {
         console.log(data);
-        this.images=data[0];
-        this.videos=data[1];
+       this.items=data
         console.log(this.videos)
       }
     )
   }
 
+  async getTv(){
+    this.tvs =await this._dataService.get("tvs").toPromise()
+  }
 
 
   ngOnInit() {
-    this.allImageVideo()
+   // this.allImageVideo()
+
   }
   deleteImg(id,name){
     
@@ -59,7 +70,7 @@ export class UploadfilesComponent implements OnInit {
           
             console.log("POST call successful value returned in body", 
                         val);
-                         this.allImageVideo()
+                         this.allImageVideo(this.selectedtv)
         },
         response => {
           console.log("POST call in error", response);
@@ -74,7 +85,7 @@ export class UploadfilesComponent implements OnInit {
   deleteVid(id,name){
     this._dataService.add({"id":id,"name":name},"deleteVid").subscribe(
         (val) => {
-         this.allImageVideo();
+         this.allImageVideo(this.selectedtv);
           
             console.log("POST call successful value returned in body", 
                         val);
@@ -97,7 +108,7 @@ export class UploadfilesComponent implements OnInit {
      }
      this._dataService.add({"id":image.id,"active":image.active},"showhideImg").subscribe(
       (val) => {
-       this.allImageVideo();
+       this.allImageVideo(this.selectedtv);
         
           console.log("POST call successful value returned in body", 
                       val);
@@ -119,7 +130,7 @@ export class UploadfilesComponent implements OnInit {
      }
      this._dataService.add({"id":video.id,"active":video.active},"showhideVid").subscribe(
       (val) => {
-       this.allImageVideo();
+       this.allImageVideo(this.selectedtv);
         
           console.log("POST call successful value returned in body", 
                       val);
@@ -158,7 +169,7 @@ export class UploadfilesComponent implements OnInit {
           if(data){
             this.uspeh=true
             this.napaka=false
-            this.allImageVideo();
+            this.allImageVideo(this.selectedtv);
           }else{
             this.napaka=true
           }
@@ -179,7 +190,7 @@ export class UploadfilesComponent implements OnInit {
        let result=await this._dataService.add({"id":id,"red":value},"updateImgRed").toPromise()
       console.log(result)
       if(result){
-        this.allImageVideo();
+        this.allImageVideo(this.selectedtv);
         this.show="";
       }
     }
@@ -191,7 +202,7 @@ export class UploadfilesComponent implements OnInit {
        let result=await this._dataService.add({"id":id,"red":value},"updateVidRed").toPromise()
       console.log(result)
       if(result){
-        this.allImageVideo();
+        this.allImageVideo(this.selectedtv);
         this.show="";
       }
     }
@@ -212,5 +223,10 @@ export class UploadfilesComponent implements OnInit {
    
       
     
+  }
+ izbranitv(event){
+   console.log( this.itemsForm.value.tv)
+   this.selectedtv=this.itemsForm.value.tv
+   this.allImageVideo(this.selectedtv);
   }
 }
