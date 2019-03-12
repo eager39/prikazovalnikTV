@@ -1,0 +1,32 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  
+    <div class="form-group">
+      <label for="avatar">Slika / video</label>
+      <input type="file" id="avatar" accept="video/*,image/*" (change)="onFileChange($event)" #fileInput>
+      <button type="button" class="btn btn-sm btn-default" (click)="clearFile()">Pobrisi datoteko</button>
+    </div>
+    <button type="submit" [disabled]="form.invalid || loading" class="btn btn-success">Naloži <i class="fa fa-spinner fa-spin fa-fw" *ngIf="loading"></i></button>
+    <ng-container *ngIf="uspeh">Uspešno naloženo</ng-container>
+    <ng-container *ngIf="napaka">Napaka </ng-container>
+  </form>
+
+
+  <form [formGroup]="imageForm">
+<h1>slike</h1>
+  <ul *ngIf="images">
+    <li *ngFor="let image of images">
+     Ime: {{image.name}} ,aktivno: {{image.active}} ,Vrstni red:<span  >{{image.red}}</span><input type="number" *ngIf="show==image.id" (change)="updateImgRed(image.id,imageForm.value.red)" value="{{image.red}}"  formControlName="red">  <button (click)="showhideImg(image)" class="btn btn-success">Prikazi/skrij</button><button (click)="deleteImg(image.id,image.name)" class="btn btn-success">zbrisi</button><button (click)="edit(image.id)" class="btn btn-success">Spremeni vrsti red</button>
+    </li>
+
+  </ul>
+  </form>
+  <form [formGroup]="videoForm">
+  <h1>videji</h1>
+  <ul *ngIf="videos">
+      <li *ngFor="let video of videos">
+          Ime: {{video.name}} ,aktivno: {{video.active}}, Vrstni red:<span>{{video.red}}</span><input type="number" *ngIf="show==video.id" (change)="updateVidRed(video.id,videoForm.value.red)" value="{{video.red}}"  formControlName="red"> <button (click)="showhideVid(video)" class="btn btn-success">Prikazi/skrij</button><button (click)="deleteVid(video.id,video.name)" class="btn btn-success">zbrisi</button><button (click)="edit(video.id)" class="btn btn-success">Spremeni vrsti red</button>
+         </li>
+
+    </ul>
+  </form>
+  <button routerLink="/home">Domov</button>
