@@ -35,6 +35,10 @@ export class UploadfilesComponent implements OnInit {
     name: new FormControl(''),
     location: new FormControl(''),
   })
+  uploadTextForm= new FormGroup({
+    naslov:new FormControl(""),
+    vsebina: new FormControl("")
+  })
 
 
   createForm() {
@@ -56,6 +60,8 @@ export class UploadfilesComponent implements OnInit {
       }
     )
   }
+ 
+ 
 
   async getTv(){
     this.tvs =await this._dataService.get("tvs").toPromise()
@@ -189,8 +195,9 @@ this.getTVs()
       });
    
   }
+  ifactive=0;
  async updateImgRed(id,value){
-   
+   this.ifactive=id
     
        let result=await this._dataService.add({"id":id,"red":value},"updateImgRed").toPromise()
       console.log(result)
@@ -201,18 +208,51 @@ this.getTVs()
     }
   
   }
+  async updateItemDur(id,value,dur){
+    if(dur==1000 && value=="-"){
+      return false;
+    }
+    this.ifactive=id
+     console.log("haha")
+        let result=await this._dataService.add({"id":id,"red":value},"updateItemDur").toPromise()
+       console.log(result)
+       if(result){
+         this.allImageVideo(this.selectedtv);
+         this.show="";
+       
+     }
+   
+   }
   async addTVs(){
     
      var form=this.tvsForm.value;
+     if(!form.name){
+       return false;
+     }
    var data=await this._dataService.add(form,"addTVs").toPromise()
        if(data){
          alert("uspešno dodana naprava")
+         this.getTVs()
+       }else{
+         alert("error")
        }
-     
- 
-     
-   
+
  }
+
+ async addText(){
+    
+  var form=this.uploadTextForm.value;
+  var tvid=this.itemsForm.value.tv
+var data=await this._dataService.add({"text":JSON.stringify(form),"id":tvid},"addText").toPromise()
+    if(data){
+      alert("uspešno dodano")
+      this.allImageVideo(this.selectedtv)
+    }
+  
+
+  
+
+}
  
  async getTVs(){
   var data=await this._dataService.get("getTVs").toPromise()

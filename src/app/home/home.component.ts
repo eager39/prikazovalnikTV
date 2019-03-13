@@ -69,7 +69,7 @@ console.log(this.tvid)
       params: {
         id:this.tvid
       } }).toPromise()
-   
+      console.log(this.data)
     function compare(a, b) {
       // Use toUpperCase() to ignore character casing
       const genreA = a.ord;
@@ -77,15 +77,15 @@ console.log(this.tvid)
     
       let comparison = 0;
       if (genreA > genreB) {
-        comparison = -1;
-      } else if (genreA < genreB) {
         comparison = 1;
+      } else if (genreA < genreB) {
+        comparison = -1;
       }
       return comparison;
     }
     
     this.data.sort(compare);
-    console.log(this.data)
+ 
     
   }
  
@@ -96,11 +96,11 @@ console.log(this.tvid)
  this.carousel.interval=0
  
   }
-  end(name){ 
-    this.carousel.interval=1000
-    name.load()
+  end(video){ 
+   
+    video.currentTime = 0;
     this.carousel.nextSlide()
-    name.pause()
+    video.pause()
   
      }
      change(item){
@@ -112,7 +112,9 @@ console.log(this.tvid)
        
         
       }else{
-        this.carousel.interval=1000
+       console.log(item.activeSlide)
+        this.carousel.interval=this.data[item.activeSlide].dur
+        console.log(this.carousel.interval)
       }
      }
 

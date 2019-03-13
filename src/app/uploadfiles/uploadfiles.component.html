@@ -10,6 +10,12 @@
     <ng-container *ngIf="uspeh">Uspešno naloženo</ng-container>
     <ng-container *ngIf="napaka">Napaka </ng-container>
   </form>
+  
+  <form [formGroup]="uploadTextForm" *ngIf="itemsForm.value.tv" (ngSubmit)="addText()">
+  Naslov  <input type="text" formControlName="naslov">
+  Vsebina  <input type="text" formControlName="vsebina">
+  <button type="submit" >Dodaj</button>
+  </form>
 
 <!--
   <form [formGroup]="imageForm">
@@ -34,14 +40,14 @@
   <form [formGroup]="itemsForm" (keydown.enter)="$event.preventDefault()">
 
       <select formControlName="tv" (change)="izbranitv()">
-          <option *ngFor="let tv of tvs" [value]="tv.id">{{tv.name}}</option>
+          <option *ngFor="let tv of tvs" [value]="tv.id">{{tv.name}} {{tv.id}}</option>
         </select>
 
       <ul *ngIf="items">
 <ng-container *ngFor="let item of items">
-          <li  >
+          <li [ngClass]="{'vidno' : item.active==1,'nevidno' : item.active==0,'asd':ifactive==item.id}" >
             
-           Ime: {{item.name}} ,aktivno: {{item.active}} ,Vrstni red:<span  >{{item.ord}}</span><input type="number" *ngIf="show==item.id" (change)="updateImgRed(item.id,itemsForm.value.ord)" value="{{item.ord}}"  formControlName="ord">  <button (click)="showhideImg(item)" class="btn btn-success">Prikazi/skrij</button><button (click)="deleteImg(item.id,item.name)" class="btn btn-success">zbrisi</button><button (click)="updateImgRed(item.id,'+')" class="btn btn-success">+</button><button (click)="updateImgRed(item.id,'-')" class="btn btn-success">-</button>
+           Ime: {{item.name}} ,<span class="test" >trajanje: {{item.duration/1000}}s,<button (click)="updateItemDur(item.id,'+',item.duration)" class="btn btn-success">+</button><button (click)="updateItemDur(item.id,'-',item.duration)" class="btn btn-success">-</button> Vrstni red:{{item.ord}} <button (click)="showhideImg(item)" class="btn btn-success">Prikazi/skrij</button><button (click)="deleteImg(item.id,item.name)" class="btn btn-success">zbrisi</button><button (click)="updateImgRed(item.id,'+')" class="btn btn-success">+</button><button (click)="updateImgRed(item.id,'-')" class="btn btn-success">-</button></span>
           </li></ng-container>
       </ul>
     </form>

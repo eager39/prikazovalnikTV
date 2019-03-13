@@ -2,3 +2,17 @@
     object-fit: contain;
 
 }
+.textdiv {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    /* bring your own prefixes */
+    transform: translate(-50%, -50%);
+    font-size: 100px;
+    background-color: aqua;
+    text-align: center
+  }
+  .pdfViewerContainer{
+      overflow: hidden ;
+      border: 0px;
+  }

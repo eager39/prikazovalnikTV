@@ -92,10 +92,11 @@ app.get('/data',cors(), function(req, res) {
 
    var slike = [];
    var data;
-   var sql = 'SELECT id,name,active,type,ord FROM items WHERE active=1 and display=?';
+   var sql = 'SELECT id,name,active,type,ord,duration FROM items WHERE active=1 and display=? ORDER BY type asc';
    connection.query(sql,[id], function(err, results) {
       if (err) throw err
       data = results;
+      
       var type;
       function getImage(image) {
          
@@ -111,48 +112,57 @@ app.get('/data',cors(), function(req, res) {
          var promises = [];
          // load all images in parallel
          for (var i = 0; i < data.length; i++) {
-            if(data[i].type=="image"){
+            if(data[i].type=="image" || data[i].type=="pdf"){
+
                promises.push(getImage(data[i]));
             }
+           
             
          }
-         for (var i = 0; i < data.length; i++) {
-            if(data[i].type=="pdf"){
-               promises.push(getImage(data[i]));
-            }
-            
-         }
+        
          // return promise that is resolved when all images are done loading
          return Promise.all(promises);
       }
 
       getAllImages().then(function(imageArray) {
+         
          for (var i = 0; i < imageArray.length; i++) {
-            if(data[i].type=="image"){
-               type="image"
-            }else if(data[i].type=="pdf"){
-               type="pdf"
-            }
+       
+            if(data[i].type=="image" || data[i].type=="pdf"){
             
-            slike.push({
+                slike.push({
                "slika": imageArray[i].toString("base64"),
                "name":data[i].name,
-               "type":type,
-               "ord":data[i].ord
+               "type":data[i].type,
+               "ord":data[i].ord,
+               "dur":data[i].duration
             })
+            }
+           
+            
          }
          for(var j=0;j<data.length;j++){
             if(data[j].type=="video"){
                slike.push({
                "name":data[j].name,
-               "type":"video",
-               "ord":data[j].ord
+               "type":data[j].type,
+               "ord":data[j].ord,
+               "dur":0
             })
+            }else if(data[j].type=="text"){
+               
+               slike.push({
+                  "naslov":JSON.parse(data[j].name).naslov,
+                  "vsebina":JSON.parse(data[j].name).vsebina,
+                  "type":data[j].type,
+                  "ord":data[j].ord,
+                  "dur":data[i].duration
+               })
             }
             
          }
          
-        
+       
 
          res.json(slike)
       }, function(err) {
@@ -168,7 +178,7 @@ app.get('/data',cors(), function(req, res) {
 });
 
 app.post("/image", function(request, response) {
-   console.log(request.body.item)
+  
    if (!request.body.item.value) {
       response.json(false)
       return false;
@@ -193,12 +203,13 @@ customtype="video"
             }
             var sql = "INSERT INTO items (name,active,type,display) VALUES (?,?,?,?)";
             connection.query(sql, [filename, 1,customtype,display], function(err, results) {
-                console.log(results)
+               
                if(!err){
                   console.log("The file was saved!");
                  
                response.json(true);
                }else{
+                  console.log(err)
                   response.json(false)
                }
                
@@ -216,6 +227,10 @@ customtype="video"
 });
 
 app.post("/addTVs",function(request,response){
+   if(!request.body.name){
+      response.status(400).json(false)
+      return false;
+   }
 var name=request.body.name
 var location=request.body.location
 var sql = "INSERT INTO displays (name,location) VALUES (?,?)";
@@ -225,9 +240,20 @@ connection.query(sql, [name, location], function(err, results) {
    }
 })
 })
-app.get("tvs",function(request,response){
-   
-})
+app.post("/addText",function(request,response){
+  
+   var name=request.body.text
+   var id=request.body.id
+   console.log(name)
+   var type="text"
+   var sql = "INSERT INTO items (name,type,active,display) VALUES (?,?,?,?)";
+   connection.query(sql, [name, type,1,id], function(err, results) {
+      if(!err){
+         response.status(200).json(true)
+      }
+   })
+   })
+
 app.get("/getTVs",function(request,response){
    var sql = "SELECT * FROM displays";
    connection.query(sql, function(err, results) {
@@ -270,7 +296,7 @@ app.post('/auth', function(request, response) {
 });
 app.get("/uredi", function(request, response) {
  
-   var sql = "SELECT id,name,active,type,ord,display FROM items WHERE display=? ORDER BY ord asc"
+   var sql = "SELECT id,name,active,type,ord,display,duration FROM items WHERE display=? ORDER BY ord asc"
    connection.query(sql,[request.query.id], function(err, results) {
      
       response.json(results)
@@ -399,13 +425,19 @@ app.post("/updateImgRed", function(request, response) {
 
 
 })
-app.post("/updateVidRed", function(request, response) {
+app.post("/updateItemDur", function(request, response) {
 
    var id = request.body.id
    var red = request.body.red
+  if(red=="+"){
+   var sql = "UPDATE items set duration=duration+1000 WHERE id=?"
+   
+  }else{
+   var sql = "UPDATE items set duration=duration-1000 WHERE id=?"
+  }
    console.log(red)
-   var sql = "UPDATE items set ord=? WHERE id=?"
-   connection.query(sql, [red, id], function(err, results) {
+  
+   connection.query(sql, [ id], function(err, results) {
       if (!err) {
          console.log(results)
          response.json(true);
@@ -415,6 +447,7 @@ app.post("/updateVidRed", function(request, response) {
 
 
 })
+
 
 
 

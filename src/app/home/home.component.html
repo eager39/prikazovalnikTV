@@ -1,7 +1,7 @@
 
 <div class="container">
- 
-         <mdb-carousel (activeSlideChange)="change(asd)"  #asd [isControls]="false" [interval]="1000" [noPause]="1" >
+  <ng-container *ngIf="data">
+         <mdb-carousel (activeSlideChange)="change(asd)"  #asd [isControls]="false" [interval]="data[0].dur" [noPause]="1" >
            
               <!--<mdb-carousel-item >
                   <video #video  class="video-fluid" (play)="play()" (ended)="end()"  onloadedmetadata="this.muted=true" autoplay >
@@ -19,8 +19,8 @@
                                           </video>
                                          
                             
-                                      <simple-pdf-viewer #pdfViewer *ngIf="slika.type=='pdf'" [src]="'data:image/jpg;base64,'+slika.slika"></simple-pdf-viewer>
-                                      
+                                      <simple-pdf-viewer #pdfViewer removePageBorders=1 *ngIf="slika.type=='pdf'" [src]="'data:application/pdf;base64,'+slika.slika"></simple-pdf-viewer>
+                                      <div *ngIf="slika.type=='text'" class="textdiv"><h1>{{slika.naslov}}</h1><p>{{slika.vsebina}}</p></div>
                               
                               
                               </mdb-carousel-item>
@@ -28,6 +28,6 @@
                                     
       </mdb-carousel>
    
-
+</ng-container>
 
 </div>
