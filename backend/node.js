@@ -255,7 +255,7 @@ app.post("/addText",function(request,response){
    })
 
 app.get("/getTVs",function(request,response){
-   var sql = "SELECT * FROM displays";
+   var sql = "SELECT *,(SELECT count(items.id) FROM items WHERE displays.id=items.display) as numOfSlides FROM displays ";
    connection.query(sql, function(err, results) {
       if (!err) {
          response.status(200).json(results)
@@ -334,6 +334,24 @@ app.post("/deleteImg", function(request, response) {
       }
       })
          
+      }
+   })
+
+
+
+})
+app.post("/deleteTV", function(request, response) {
+
+   var id = request.body.id
+  
+   var sql = "DELETE FROM displays WHERE id=?"
+ 
+   connection.query(sql, [id], function(err, results) {
+      if (!err) {
+         response.status(200).json(true)
+         
+      }else{
+         response.json(false)
       }
    })
 
