@@ -4,8 +4,9 @@ var cors = require('cors')
 var mysql = require('mysql')
 const app = express()
 var conf = require('./config')
-conf = new conf();
-const fs = require('fs');
+conf = new conf()
+const fs = require('fs')
+var util = require('util')
 
 
 var connection = mysql.createConnection({
@@ -102,9 +103,15 @@ app.get('/data',cors(), function(req, res) {
          
         return new Promise((resolve, reject) => { 
           var imgPath = __dirname+"/upload/" + image.name;
-          fs.readFile(imgPath, (err, buffer) => {
-              if (err) reject(err); else resolve(buffer);
+         
+             fs.readFile(imgPath, (err, buffer) => {
+              if (err){
+                 console.log(err)
+                 reject(err);
+              }  else resolve(buffer);
           });
+          
+          
       });
       }
 
@@ -177,7 +184,7 @@ app.get('/data',cors(), function(req, res) {
 
 });
 
-app.post("/image", function(request, response) {
+app.post("/image",async function(request, response) {
   
    if (!request.body.item.value) {
       response.json(false)
@@ -188,6 +195,7 @@ app.post("/image", function(request, response) {
    var filetype = request.body.item.filetype;
    var display=request.body.tvid
    var customtype;
+   var data=await getMaxOrd(display)
   console.log(filetype)
    if(filetype.includes("video")){
 customtype="video"
@@ -201,8 +209,8 @@ customtype="video"
             if (err) {
                return console.log(err);
             }
-            var sql = "INSERT INTO items (name,active,type,display) VALUES (?,?,?,?)";
-            connection.query(sql, [filename, 1,customtype,display], function(err, results) {
+            var sql = "INSERT INTO items (name,active,type,display,ord) VALUES (?,?,?,?,?)";
+            connection.query(sql, [filename, 1,customtype,display,data[0].currord], function(err, results) {
                
                if(!err){
                   console.log("The file was saved!");
@@ -217,7 +225,7 @@ customtype="video"
          });
 
       } catch (err) {
-
+         console.log(err)
       }
   
    
@@ -225,6 +233,17 @@ customtype="video"
   
 
 });
+ function getMaxOrd(display){
+   
+   connection.query = util.promisify(connection.query)
+   return new Promise(async function(resolve, reject) {
+   var sql="SELECT max(ord)+1 as currord FROM items WHERE display=?"
+   var result=await connection.query(sql,[display])
+  return resolve(result)
+   
+   })
+
+}
 
 app.post("/addTVs",function(request,response){
    if(!request.body.name){
@@ -240,17 +259,19 @@ connection.query(sql, [name, location], function(err, results) {
    }
 })
 })
-app.post("/addText",function(request,response){
-  
+app.post("/addText",async function(request,response){
+
+
    var name=request.body.text
    var id=request.body.id
-   console.log(name)
+  var data=await getMaxOrd(id)
    var type="text"
-   var sql = "INSERT INTO items (name,type,active,display) VALUES (?,?,?,?)";
-   connection.query(sql, [name, type,1,id], function(err, results) {
+   var sql = "INSERT INTO items (name,type,active,display,ord) VALUES (?,?,?,?,?)";
+   connection.query(sql, [name, type,1,id,data[0].currord], function(err, results) {
       if(!err){
          response.status(200).json(true)
       }
+      
    })
    })
 
@@ -391,6 +412,7 @@ app.post("/deleteVid", function(request, response) {
    var id = request.body.id
    var name=request.body.name
    var sql = "DELETE FROM items WHERE id=?"
+   connection.query("START TRANSACTION")
    connection.query(sql, [id], function(err, results) {
       if (!err) {
 
@@ -422,23 +444,47 @@ app.post("/deleteVid", function(request, response) {
 
 })
 app.post("/updateImgRed", function(request, response) {
-
+   connection.query = util.promisify(connection.query)
    var id = request.body.id
    var red = request.body.red
+   var display=request.body.display
+   console.log(display)
   if(red=="+"){
-   var sql = "UPDATE items set ord=ord + 1 WHERE id=?"
+     var updatedORD="SELECT ord,id,display  FROM items WHERE id=?"
+    var updateOthers="UPDATE items set ord=ord-1 WHERE ord=?+1 and display=? and id!=?"
+   var updateSelected = "UPDATE items set ord=ord + 1 WHERE id=?"
    
   }else{
-   var sql = "UPDATE items set ord=ord - 1 WHERE id=?"
+   var updatedORD="SELECT ord,id,display  FROM items WHERE id=?"
+   var updateOthers="UPDATE items set ord=ord+1 WHERE ord=?-1 and display=? and id!=?"
+  var updateSelected = "UPDATE items set ord=ord - 1 WHERE id=?"
   }
-   console.log(red)
+  async function runquery(){
+      try {
+   var result1 = await connection.query(updatedORD,[id])
+  var result2=await connection.query(updateOthers,[result1[0].ord,display,id])
+  var result3=await connection.query(updateSelected,[id])
+  console.log(result1)
+  console.log(result2)
+  console.log(result3)
+  console.log('updated');
+  connection.query("COMMIT")
+  response.json(true);
+} catch(err) {
+   console.log(err)
+   connection.query("ROLLBACK")
+}
+   }
+   runquery()
   
-   connection.query(sql, [ id], function(err, results) {
+  
+  /* connection.query(sql, [ id], function(err, results) {
       if (!err) {
          console.log(results)
          response.json(true);
       }
    })
+   */
 
 
 

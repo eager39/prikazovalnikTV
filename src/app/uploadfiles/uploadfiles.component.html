@@ -44,7 +44,7 @@
   <form [formGroup]="itemsForm" (keydown.enter)="$event.preventDefault()">
     <h3 *ngIf="!itemsForm.value.tv">Izberi TV za urejanje</h3>
      
-      <ul > <select formControlName="tv" (change)="izbranitv()">
+      <ul > <select  formControlName="tv" (change)="izbranitv()">
           <option *ngFor="let tv of tvs" [value]="tv.id">{{tv.name}} {{tv.id}}</option>
         </select>
         <a *ngIf="itemsForm.value.tv" routerLink='/home/{{itemsForm.value.tv}}'>Povezava za TV </a>

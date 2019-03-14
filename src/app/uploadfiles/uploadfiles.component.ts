@@ -69,7 +69,7 @@ export class UploadfilesComponent implements OnInit {
         }
      }).subscribe(
         data => {
-           console.log(data);
+          
            this.items = data
 
         }
@@ -96,8 +96,7 @@ export class UploadfilesComponent implements OnInit {
         (val) => {
 
 
-           console.log("POST call successful value returned in body",
-              val);
+         
            this.allImageVideo(this.selectedtv)
            this.getTVs();
         },
@@ -119,8 +118,7 @@ export class UploadfilesComponent implements OnInit {
         (val) => {
            this.allImageVideo(this.selectedtv);
 
-           console.log("POST call successful value returned in body",
-              val);
+         
         },
         response => {
            console.log("POST call in error", response);
@@ -136,7 +134,7 @@ export class UploadfilesComponent implements OnInit {
     let result = await this._dataService.add({
       "id": id,
    }, "deleteTV").toPromise()
-   console.log(result)
+   
    if (result) {
       this.getTVs();
       alert("uspešno izbrisano")
@@ -159,8 +157,7 @@ export class UploadfilesComponent implements OnInit {
         (val) => {
            this.allImageVideo(this.selectedtv);
 
-           console.log("POST call successful value returned in body",
-              val);
+        
         },
         response => {
            console.log("POST call in error", response);
@@ -184,8 +181,7 @@ export class UploadfilesComponent implements OnInit {
         (val) => {
            this.allImageVideo(this.selectedtv);
 
-           console.log("POST call successful value returned in body",
-              val);
+           
         },
         response => {
            console.log("POST call in error", response);
@@ -251,9 +247,10 @@ export class UploadfilesComponent implements OnInit {
 
      let result = await this._dataService.add({
         "id": id,
-        "red": value
+        "red": value,
+        "display":this.itemsForm.value.tv
      }, "updateImgRed").toPromise()
-     console.log(result)
+    
      if (result) {
         this.allImageVideo(this.selectedtv);
         this.show = "";
@@ -266,12 +263,12 @@ export class UploadfilesComponent implements OnInit {
         return false;
      }
      this.ifactive = id
-     console.log("haha")
+     
      let result = await this._dataService.add({
         "id": id,
         "red": value
      }, "updateItemDur").toPromise()
-     console.log(result)
+    
      if (result) {
         this.allImageVideo(this.selectedtv);
         this.show = "";
@@ -316,7 +313,7 @@ export class UploadfilesComponent implements OnInit {
   async getTVs() {
      var data = await this._dataService.get("getTVs").toPromise()
      this.tvs = data
-     console.log(this.tvs)
+    
   }
 
   clearFile() {
@@ -335,7 +332,7 @@ export class UploadfilesComponent implements OnInit {
 
   }
   izbranitv(event) {
-     console.log(this.itemsForm.value.tv)
+     
      this.selectedtv = this.itemsForm.value.tv
      this.allImageVideo(this.selectedtv);
   }

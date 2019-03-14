@@ -69,7 +69,7 @@ console.log(this.tvid)
       params: {
         id:this.tvid
       } }).toPromise()
-      console.log(this.data)
+     
     function compare(a, b) {
       // Use toUpperCase() to ignore character casing
       const genreA = a.ord;
@@ -112,9 +112,9 @@ console.log(this.tvid)
        
         
       }else{
-       console.log(item.activeSlide)
+      
         this.carousel.interval=this.data[item.activeSlide].dur
-        console.log(this.carousel.interval)
+       
       }
      }
 
