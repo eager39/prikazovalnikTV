@@ -331,7 +331,7 @@ export class UploadfilesComponent implements OnInit {
 
 
   }
-  izbranitv(event) {
+  izbranitv() {
      
      this.selectedtv = this.itemsForm.value.tv
      this.allImageVideo(this.selectedtv);

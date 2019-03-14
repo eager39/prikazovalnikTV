@@ -44,3 +44,4 @@ testem.log
 .DS_Store
 Thumbs.db
 backend/config.js
+backend/config.js
