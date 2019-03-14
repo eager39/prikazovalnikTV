@@ -38,9 +38,12 @@ export class HomeComponent implements OnInit {
    this.apiurl=this.actionUrl
   
   this.interval = setInterval(() => {
-    this.data=new Array();
-  this.userData()
-}, 900000);
+this.data=new Array
+this.userData()
+
+ 
+ 
+}, 20000);
  
 if(this.route.params){
   this.sub = this.route.params.subscribe(params => {
@@ -50,26 +53,17 @@ if(this.route.params){
   this.tvid=1
 }
  this.userData()  
- //this.user=this.auth.currentUserValue;
-console.log(this.tvid)
+
  
   }
-  ngAfterViewInit(){
-   // if( this.carousel.slides[this.carousel.activeSlide].el.nativeElement.children[0].className.includes("video")){
-        
-   //   let elem = <HTMLVideoElement> document.getElementById(this.carousel.activeSlide)
-   //   elem.play()
-  //  }
-  //console.log(this.carousel.el.nativeElement.children[0].className)
-
-  }
+ 
 
   async userData() {
     this.data =await this._dataService.get("data",{ 
       params: {
         id:this.tvid
       } }).toPromise()
-     
+     console.log(this.data)
     function compare(a, b) {
       // Use toUpperCase() to ignore character casing
       const genreA = a.ord;
@@ -96,26 +90,44 @@ console.log(this.tvid)
  this.carousel.interval=0
  
   }
+  
+  
   end(video){ 
-   
+
     video.currentTime = 0;
     this.carousel.nextSlide()
+
     video.pause()
   
      }
      change(item){
+      
+    
+      
+      if(this.data!=[] && item.activeSlide!=undefined && this.data[item.activeSlide].type!=undefined){
+        
       //console.log(item.activeSlide)
-      if( item.slides[item.activeSlide].el.nativeElement.children[0].className.includes("video")){
+      //if( item.slides[item.activeSlide].el.nativeElement.children[0].className.includes("video")){
+        if(this.data[item.activeSlide].type=="video"){
+         
          this.carousel.interval=0
         let elem = <HTMLVideoElement> document.getElementById(item.activeSlide)
         elem.play()
        
         
       }else{
-      
-        this.carousel.interval=this.data[item.activeSlide].dur
+        
+       
+       
+           this.carousel.interval=this.data[item.activeSlide].dur
+        
+       
        
       }
+    }else{
+     item.activeSlide=0
+    }
+  
      }
 
 }

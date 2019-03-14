@@ -1,7 +1,9 @@
-
-<div class="container">
-  <ng-container *ngIf="data">
-         <mdb-carousel (activeSlideChange)="change(asd)"  #asd [isControls]="false" [interval]="data[0].dur" [noPause]="1" >
+<head>
+ <!-- <meta http-equiv="refresh" content="15">-->
+</head>
+<div class="container" *ngIf="data">
+  <ng-container >
+         <mdb-carousel (activeSlideChange)="change(asd)"  #asd [isControls]="false" [interval]="data[0]?.dur" [noPause]="1" >
            
               <!--<mdb-carousel-item >
                   <video #video  class="video-fluid" (play)="play()" (ended)="end()"  onloadedmetadata="this.muted=true" autoplay >
