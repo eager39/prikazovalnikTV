@@ -45,7 +45,7 @@ app.get('/video/:id',cors(), function(req, res) {
        try{
       if (err) throw err
       if (results.length > 0) {
-         const path = __dirname+'/upload/' + results[0].name;
+         const path = __dirname+'upload' + results[0].name;
          const stat = fs.statSync(path)
          const fileSize = stat.size
          const range = req.headers.range
@@ -87,13 +87,14 @@ app.get('/video/:id',cors(), function(req, res) {
 app.get('/data',cors(), function(req, res) {
 
    var id=req.query.id
- 
-
-
-
+if(id=="all"){
+   var sql = 'SELECT id,name,active,type,ord,duration FROM items WHERE active=1  ORDER BY type asc';
+}else{
+   var sql = 'SELECT id,name,active,type,ord,duration FROM items WHERE active=1 and display=? ORDER BY type asc';
+}
    var slike = [];
    var data;
-   var sql = 'SELECT id,name,active,type,ord,duration FROM items WHERE active=1 and display=? ORDER BY type asc';
+ //  var sql = 'SELECT id,name,active,type,ord,duration FROM items WHERE active=1 and display=? ORDER BY type asc';
    connection.query(sql,[id], function(err, results) {
       if (err) throw err
       data = results;
@@ -102,7 +103,7 @@ app.get('/data',cors(), function(req, res) {
       function getImage(image) {
          
         return new Promise((resolve, reject) => { 
-          var imgPath = __dirname+"/upload/" + image.name;
+          var imgPath = __dirname+"upload" + image.name;
          
              fs.readFile(imgPath, (err, buffer) => {
               if (err){
@@ -196,18 +197,23 @@ app.post("/image",async function(request, response) {
    var display=request.body.tvid
    var customtype;
    var data=await getMaxOrd(display)
-  console.log(filetype)
+  
+ 
    if(filetype.includes("video")){
 customtype="video"
    }else if(filetype.includes("image")){
+      console.log("haha")
       customtype="image"
    }else if(filetype.includes("pdf")){
       customtype="pdf"
    }
       try {
-         fs.writeFile(__dirname+"/upload/" + filename, image, "base64", function(err) {
+         fs.writeFile(__dirname+"upload" + filename, image, "base64", function(err) {
             if (err) {
+               console.log("wtf")
+                response.json(false)
                return console.log(err);
+              
             }
             var sql = "INSERT INTO items (name,active,type,display,ord) VALUES (?,?,?,?,?)";
             connection.query(sql, [filename, 1,customtype,display,data[0].currord], function(err, results) {
@@ -239,7 +245,14 @@ customtype="video"
    return new Promise(async function(resolve, reject) {
    var sql="SELECT max(ord)+1 as currord FROM items WHERE display=?"
    var result=await connection.query(sql,[display])
-  return resolve(result)
+   console.log(result)
+   if(result[0].currord==null){
+      return resolve([{"currord":0}])
+      
+   }else{
+      return resolve(result)
+   }
+  
    
    })
 
@@ -265,6 +278,7 @@ app.post("/addText",async function(request,response){
    var name=request.body.text
    var id=request.body.id
   var data=await getMaxOrd(id)
+ 
    var type="text"
    var sql = "INSERT INTO items (name,type,active,display,ord) VALUES (?,?,?,?,?)";
    connection.query(sql, [name, type,1,id,data[0].currord], function(err, results) {
@@ -330,11 +344,17 @@ app.post("/deleteImg", function(request, response) {
 
    var id = request.body.id
    var name = request.body.name
+   var type=request.body.type
    var sql = "DELETE FROM items WHERE id=?"
    connection.query("START TRANSACTION")
    connection.query(sql, [id], function(err, results) {
       if (!err) {
-         fs.stat(__dirname+'/upload/'+name, function (err, stats) {
+         if(type=="text"){
+            connection.query("COMMIT")
+            response.json(true);
+         }else{
+
+         fs.stat(__dirname+'upload'+name, function (err, stats) {
            if(err){
               console.log(err)
               connection.query("COMMIT")
@@ -342,7 +362,7 @@ app.post("/deleteImg", function(request, response) {
            }else{
          
          try{
-            fs.unlink(__dirname+'/upload/'+name,function(err){
+            fs.unlink(__dirname+'upload'+name,function(err){
                if(err) return console.log(err);
                console.log('file deleted successfully');
                connection.query("COMMIT")
@@ -354,7 +374,7 @@ app.post("/deleteImg", function(request, response) {
          }
       }
       })
-         
+   }
       }
    })
 
@@ -373,6 +393,21 @@ app.post("/deleteTV", function(request, response) {
          
       }else{
          response.json(false)
+      }
+   })
+
+
+
+})
+app.post("/editTV", function(request, response) {
+
+   var id = request.body.id
+   var name = request.body.name
+   var location = request.body.location
+   var sql = "UPDATE displays set name=?,location=? WHERE id=?"
+   connection.query(sql, [name,location, id], function(err, results) {
+      if (!err) {
+         response.json(true);
       }
    })
 
@@ -416,7 +451,7 @@ app.post("/deleteVid", function(request, response) {
    connection.query(sql, [id], function(err, results) {
       if (!err) {
 
-         fs.stat(__dirname+'/upload/'+name, function (err, stats) {
+         fs.stat(__dirname+'upload'+name, function (err, stats) {
             if(err){
                console.log(err)
                connection.query("COMMIT")
@@ -424,7 +459,7 @@ app.post("/deleteVid", function(request, response) {
             }else{
           
           try{
-             fs.unlink(__dirname+'/upload/'+name,function(err,result){
+             fs.unlink(__dirname+'upload'+name,function(err,result){
                 if(err) return console.log(err);
                 console.log(result)
                 console.log('file deleted successfully');

@@ -34,31 +34,43 @@ export class HomeComponent implements OnInit {
   interval;
      apiurl;
      tvid;
+     tvs;
   ngOnInit() {
    this.apiurl=this.actionUrl
-  
+ /* 
   this.interval = setInterval(() => {
 this.data=new Array
 this.userData()
 
  
  
-}, 20000);
+}, 10000);
+*/
  
 if(this.route.params){
   this.sub = this.route.params.subscribe(params => {
-    this.tvid = params['id'];
+    if(params['id']){
+       this.tvid = params['id'];
+    }else{
+      this.tvid="all"
+    }
+   
 })
-}else{
-  this.tvid=1
 }
  this.userData()  
-
+this.getTv()
  
   }
+
+  async getTv() {
+    var data = await this._dataService.get("getTVs").toPromise()
+    this.tvs = data
+   
+ }
  
 
   async userData() {
+    console.log(this.tvid)
     this.data =await this._dataService.get("data",{ 
       params: {
         id:this.tvid
@@ -100,12 +112,19 @@ if(this.route.params){
     video.pause()
   
      }
+     c=0
      change(item){
-      
-    
-      
-      if(this.data!=[] && item.activeSlide!=undefined && this.data[item.activeSlide].type!=undefined){
-        
+       console.log(this.c)
+      this.c++
+if(this.c>(this.data.length*2)-1){
+  this.data=new Array
+this.userData()
+this.c=0
+}
+   
+     
+      if(this.data.length>0 && item.activeSlide!=undefined){
+         
       //console.log(item.activeSlide)
       //if( item.slides[item.activeSlide].el.nativeElement.children[0].className.includes("video")){
         if(this.data[item.activeSlide].type=="video"){

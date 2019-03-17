@@ -1,7 +1,7 @@
 <head>
  <!-- <meta http-equiv="refresh" content="15">-->
 </head>
-<div class="container" *ngIf="data">
+<div class="container" *ngIf="tvid!='all' && data">
   <ng-container >
          <mdb-carousel (activeSlideChange)="change(asd)"  #asd [isControls]="false" [interval]="data[0]?.dur" [noPause]="1" >
            
@@ -32,4 +32,18 @@
    
 </ng-container>
 
+</div>
+<div *ngIf="tvid=='all'">
+    <ng-container *ngFor="let tv of tvs">
+      <ul>
+        <li >
+          
+         Ime: {{tv.name}} , Število slidov na TV: {{tv.numOfSlides}}
+        </li>
+      </ul>
+      </ng-container>
+      
+         
+       <button routerLink="/dodaj">Urejanje TV</button>
+  
 </div>

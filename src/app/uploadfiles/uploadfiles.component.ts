@@ -34,6 +34,10 @@ export class UploadfilesComponent implements OnInit {
   items;
   selectedtv;
   tvs;
+  editTv=false;
+   currTVname
+   currTVlocation
+   tvid
   @ViewChild('fileInput') fileInput: ElementRef;
   constructor(private fb: FormBuilder, private _dataService: ApiDataService, ) {
      this.createForm();
@@ -76,7 +80,31 @@ export class UploadfilesComponent implements OnInit {
      )
   }
 
+editTV(tv){
+   
+  this.currTVname=tv.name
+   this.currTVlocation=tv.location
+  this.tvid=tv.id
+   this.editTv=true
 
+}
+async editTVs(id){
+   let result = await this._dataService.add({
+      "id": id,
+      "name":this.tvsForm.value.name,
+      "location":this.tvsForm.value.location
+   }, "editTV").toPromise()
+   
+   if (result) {
+      this.getTVs();
+      this.allImageVideo(this.selectedtv)
+      alert("uspešno spremenjeno")
+      this.editTv=false
+
+   }else{
+     alert("napaka pri spremembi")
+   }
+}
 
   async getTv() {
      this.tvs = await this._dataService.get("tvs").toPromise()
@@ -87,11 +115,12 @@ export class UploadfilesComponent implements OnInit {
      // this.allImageVideo()
      this.getTVs()
   }
-  deleteImg(id, name) {
+  deleteImg(id, name,type) {
 
      this._dataService.add({
         "id": id,
-        "name": name
+        "name": name,
+        "type":type
      }, "deleteImg").subscribe(
         (val) => {
 
@@ -229,6 +258,7 @@ export class UploadfilesComponent implements OnInit {
               this.getTVs();
            } else {
               this.napaka = true
+              this.loading = false;
            }
 
            this.loading = false;
@@ -317,6 +347,7 @@ export class UploadfilesComponent implements OnInit {
   }
 
   clearFile() {
+   this.loading=false
      this.form.get('avatar').setValue(null);
      this.fileInput.nativeElement.value = '';
      setTimeout(() => { //<<<---    using ()=> syntax

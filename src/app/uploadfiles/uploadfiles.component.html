@@ -52,7 +52,7 @@
 <ng-container *ngFor="let item of items">
           <li [ngClass]="{'vidno' : item.active==1,'nevidno' : item.active==0,'asd':ifactive==item.id}" >
             
-           Ime: {{item.name}} ,<span class="test" >trajanje: {{item.duration/1000}}s,<button (click)="updateItemDur(item.id,'+',item.duration)" class="btn btn-success">+</button><button (click)="updateItemDur(item.id,'-',item.duration)" class="btn btn-success">-</button> Vrstni red:{{item.ord}} <button (click)="showhideImg(item)" class="btn btn-success">Prikazi/skrij</button><button (click)="deleteImg(item.id,item.name)" class="btn btn-success">zbrisi</button><button (click)="updateImgRed(item.id,'+')" class="btn btn-success">+</button><button (click)="updateImgRed(item.id,'-')" class="btn btn-success">-</button></span>
+           Ime: {{item.name}} ,<span class="test" >trajanje: {{item.duration/1000}}s,<button (click)="updateItemDur(item.id,'+',item.duration)" class="btn btn-success">+</button><button (click)="updateItemDur(item.id,'-',item.duration)" class="btn btn-success">-</button> Vrstni red:{{item.ord}} <button (click)="showhideImg(item)" class="btn btn-success">Prikazi/skrij</button><button (click)="deleteImg(item.id,item.name,item.type)" class="btn btn-success">zbrisi</button><button (click)="updateImgRed(item.id,'+')" class="btn btn-success">+</button><button (click)="updateImgRed(item.id,'-')" class="btn btn-success">-</button></span>
           </li></ng-container>
       </ul>
     </form>
@@ -68,9 +68,13 @@ Lokacija:<input formControlName="location" type="text">
 <ng-container *ngFor="let tv of tvs">
   <li >
     
-   Ime: {{tv.name}} , Število slidov na TV: {{tv.numOfSlides}}<button (click)="deleteTV(tv.id)" class="btn btn-success">zbrisi</button>
+   Ime: {{tv.name}} ,Lokacija: {{tv.location}}, Število slidov na TV: {{tv.numOfSlides}}<button (click)="deleteTV(tv.id)" class="btn btn-success">zbrisi</button> <button (click)="editTV(tv)">uredi</button>
   </li></ng-container>
 </ul>
+<form [formGroup]="tvsForm" *ngIf="editTv">
+    Ime naprave:<input formControlName="name" value="{{currTVname}}" type="text">
+    Lokacija:<input formControlName="location" value="{{currTVlocation}}" type="text">
+    <button class="form-control" (click)="editTVs(tvid)" class="btn btn-success" type="submit" >Dodaj</button>
 
 
     </form>
