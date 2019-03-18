@@ -37,15 +37,18 @@ export class HomeComponent implements OnInit {
      tvs;
   ngOnInit() {
    this.apiurl=this.actionUrl
- /* 
+ 
   this.interval = setInterval(() => {
-this.data=new Array
+    if(this.data.length=="0"){
+      this.data=new Array
 this.userData()
+    }
+
 
  
  
 }, 10000);
-*/
+
  
 if(this.route.params){
   this.sub = this.route.params.subscribe(params => {
@@ -70,7 +73,7 @@ this.getTv()
  
 
   async userData() {
-    console.log(this.tvid)
+    
     this.data =await this._dataService.get("data",{ 
       params: {
         id:this.tvid
@@ -114,9 +117,9 @@ this.getTv()
      }
      c=0
      change(item){
-       console.log(this.c)
+       
       this.c++
-if(this.c>(this.data.length*2)-1){
+if(this.c>(this.data.length*4)-1){
   this.data=new Array
 this.userData()
 this.c=0

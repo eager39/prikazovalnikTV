@@ -1,5 +1,7 @@
 .slika{
-    object-fit: contain;
+    height: 100%;
+     width: 100%; 
+     object-fit: contain;
 
 }
 .textdiv {
@@ -9,9 +11,15 @@
     /* bring your own prefixes */
     transform: translate(-50%, -50%);
     font-size: 100px;
-    background-color: aqua;
+   
     text-align: center
   }
+  .textdiv h1 {
+  font-size: 100px;
+  }
+  .textdiv p {
+    font-size: 70px;
+    }
   .pdfViewerContainer{
       overflow: hidden ;
       border: 0px;

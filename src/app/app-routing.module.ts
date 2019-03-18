@@ -5,6 +5,7 @@ import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component'
 import { AuthGuard } from './auth.guard';
 import { UploadfilesComponent} from './uploadfiles/uploadfiles.component'
+import { DisplayallComponent } from './displayall/displayall.component';
 
 
 const routes: Routes = [
@@ -29,12 +30,18 @@ const routes: Routes = [
     
   }, 
   {
+    path:"alltv",
+    component:DisplayallComponent,
+   
+    
+  },
+  {
     path:"",
-    component:HomeComponent
+    component:DisplayallComponent
   },
   {
     path:"**",
-    component:HomeComponent
+    component:DisplayallComponent
   }
 ]
 

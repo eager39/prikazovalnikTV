@@ -1,0 +1,10 @@
+iframe,div{
+    overflow: hidden;
+}
+.container {
+    display: flex;
+  }
+  .container> div {
+    /* these are the flex items */
+    flex: 1;
+  }

@@ -11,9 +11,9 @@
               </video>
                 </mdb-carousel-item>-->
                         <mdb-carousel-item #troll id="test"  *ngFor="let slika of data;let i=index" >
-                                 
+                                  <div class="textdiv">
                                         <img *ngIf="slika.type=='image'"  class="d-block w-100 slika" [src]="'data:image/jpg;base64,'+slika.slika" alt="Second slide" >
-                                        <video controls *ngIf="slika.type=='video' && i!=0" id="{{i}}" #video class="video-fluid" (play)="play()" (ended)="end(video)"  onloadedmetadata="this.muted=true"   >
+                                       </div> <video controls *ngIf="slika.type=='video' && i!=0" id="{{i}}" #video class="video-fluid" (play)="play()" (ended)="end(video)"  onloadedmetadata="this.muted=true"   >
                                             <source [src]="apiurl+'video/'+slika.name" type="video/mp4" />
                                           </video>
                                           <video controls *ngIf="slika.type=='video'&& i==0" id="{{i}}" #video class="video-fluid" (play)="play()" (ended)="end(video)"  onloadedmetadata="this.muted=true" autoplay  >

@@ -7,7 +7,9 @@
 
 # dependencies
 /node_modules
-
+*.jpg
+*.pdf
+*.mp4
 node_modules/
 
 # profiling files

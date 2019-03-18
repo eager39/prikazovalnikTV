@@ -1,0 +1,14 @@
+
+
+
+<div class="container"
+fxLayout="row wrap" fxLayoutGap="5px" fxLayoutAlign="flex-start" >
+  <ng-container *ngFor="let item of data">
+   
+    <div fxFlex="0 1 calc(20% - 5px)">   <a  routerLink='/home/{{item.orgid}}'>{{item.name}} {{item.location}} </a>
+      <iframe  scrolling="no"  width="100%" height="100%" [src]="item.id | safe">
+    </iframe>
+    
+    </div>
+  </ng-container>
+</div>

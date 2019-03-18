@@ -19,6 +19,18 @@ import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import { MDBBootstrapModule } from 'angular-bootstrap-md';
 import { UploadfilesComponent } from './uploadfiles/uploadfiles.component';
 import { SimplePdfViewerModule } from 'simple-pdf-viewer';
+import { DisplayallComponent } from './displayall/displayall.component';
+import { FlexLayoutModule} from '@angular/flex-layout';
+import { Pipe, PipeTransform } from '@angular/core';
+import { DomSanitizer} from '@angular/platform-browser';
+
+@Pipe({ name: 'safe' })
+export class SafePipe implements PipeTransform {
+  constructor(private sanitizer: DomSanitizer) {}
+  transform(url) {
+    return this.sanitizer.bypassSecurityTrustResourceUrl(url);
+  }
+} 
 
 @NgModule({
   declarations: [
@@ -26,7 +38,8 @@ import { SimplePdfViewerModule } from 'simple-pdf-viewer';
     HomeComponent,
     LoginComponent,
     UploadfilesComponent,
-    
+    DisplayallComponent,
+    SafePipe
   ],
   imports: [
     BrowserModule,
@@ -40,7 +53,9 @@ import { SimplePdfViewerModule } from 'simple-pdf-viewer';
     MatFormFieldModule,
     NgbModule,
     MDBBootstrapModule.forRoot(),
-    SimplePdfViewerModule
+    SimplePdfViewerModule,
+    FlexLayoutModule,
+   
 
 
   ],
