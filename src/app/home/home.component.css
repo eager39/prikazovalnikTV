@@ -24,4 +24,8 @@
       overflow: hidden ;
       border: 0px;
   }
- 
+
+ .graph{
+   height: 100%;
+   width: 100%;
+ }

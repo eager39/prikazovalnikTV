@@ -23,6 +23,7 @@ import { DisplayallComponent } from './displayall/displayall.component';
 import { FlexLayoutModule} from '@angular/flex-layout';
 import { Pipe, PipeTransform } from '@angular/core';
 import { DomSanitizer} from '@angular/platform-browser';
+import { GoogleChartsModule } from 'angular-google-charts';
 
 @Pipe({ name: 'safe' })
 export class SafePipe implements PipeTransform {
@@ -55,6 +56,7 @@ export class SafePipe implements PipeTransform {
     MDBBootstrapModule.forRoot(),
     SimplePdfViewerModule,
     FlexLayoutModule,
+    GoogleChartsModule.forRoot(),
    
 
 

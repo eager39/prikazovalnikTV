@@ -1,3 +1,13 @@
+<form [formGroup]="excelForm" *ngIf="itemsForm.value.tv" (ngSubmit)="addExcelData()">
+<h2>
+  Dodaj excel datoteko za graf
+</h2>
+<input type="file" (change)="excel($event)" multiple="false" />
+Ime grafa
+<input type="text" formControlName="name">
+<button type="submit" [disabled]="form.invalid || loading" class="btn btn-success">Naloži <i class="fa fa-spinner fa-spin fa-fw" *ngIf="loading"></i></button>
+{{message}}
+</form>
 <h1>Dodajanje in urejanje posamičnih slidov</h1>
 
 <h2 *ngIf="itemsForm.value.tv">Dodaj slikovni, video, pdf slide</h2>
@@ -20,41 +30,33 @@
   Vsebina  <input type="text" formControlName="vsebina">
   <button type="submit" class="btn btn-success" >Dodaj</button>
   </form>
-
-<!--
-  <form [formGroup]="imageForm">
-<h1>slike</h1>
-  <ul *ngIf="images">
-    <li *ngFor="let image of images">
-     Ime: {{image.name}} ,aktivno: {{image.active}} ,Vrstni red:<span  >{{image.red}}</span><input type="number" *ngIf="show==image.id" (change)="updateImgRed(image.id,imageForm.value.red)" value="{{image.red}}"  formControlName="red">  <button (click)="showhideImg(image)" class="btn btn-success">Prikazi/skrij</button><button (click)="deleteImg(image.id,image.name)" class="btn btn-success">zbrisi</button><button (click)="edit(image.id)" class="btn btn-success">Spremeni vrsti red</button>
-    </li>
-
-  </ul>
-  </form>
-  <form [formGroup]="videoForm">
-  <h1>videji</h1>
-  <ul *ngIf="videos">
-      <li *ngFor="let video of videos">
-          Ime: {{video.name}} ,aktivno: {{video.active}}, Vrstni red:<span>{{video.red}}</span><input type="number" *ngIf="show==video.id" (change)="updateVidRed(video.id,videoForm.value.red)" value="{{video.red}}"  formControlName="red"> <button (click)="showhideVid(video)" class="btn btn-success">Prikazi/skrij</button><button (click)="deleteVid(video.id,video.name)" class="btn btn-success">zbrisi</button><button (click)="edit(video.id)" class="btn btn-success">Spremeni vrsti red</button>
-         </li>
-
-    </ul>
-  </form>-->
-  
+ 
   <form [formGroup]="itemsForm" (keydown.enter)="$event.preventDefault()">
     <h3 *ngIf="!itemsForm.value.tv">Izberi TV za urejanje</h3>
-     
+   
       <ul > <select  formControlName="tv" (change)="izbranitv()">
-          <option *ngFor="let tv of tvs" [value]="tv.id">{{tv.name}} {{tv.id}}</option>
+          <option *ngFor="let tv of tvs;let i=index"   [value]="tv.id">{{tv.name}} {{tv.id}} </option>
         </select>
         <a *ngIf="itemsForm.value.tv" routerLink='/home/{{itemsForm.value.tv}}'>Povezava za TV </a>
-
+      
 <ng-container *ngFor="let item of items">
           <li [ngClass]="{'vidno' : item.active==1,'nevidno' : item.active==0,'asd':ifactive==item.id}" >
             
-           Ime: {{item.name}} ,<span class="test" >trajanje: {{item.duration/1000}}s,<button (click)="updateItemDur(item.id,'+',item.duration)" class="btn btn-success">+</button><button (click)="updateItemDur(item.id,'-',item.duration)" class="btn btn-success">-</button> Vrstni red:{{item.ord}} <button (click)="showhideImg(item)" class="btn btn-success">Prikazi/skrij</button><button (click)="deleteImg(item.id,item.name,item.type)" class="btn btn-success">zbrisi</button><button (click)="updateImgRed(item.id,'+')" class="btn btn-success">+</button><button (click)="updateImgRed(item.id,'-')" class="btn btn-success">-</button></span>
+           Ime: {{item.name |  slice:0:50}} ,<span class="test"> <button (click)="showOtherTV(item)" >Dodaj določenim</button> 
+           
+          </span>
+           <span class="test" >trajanje: {{item.duration/1000}}s,<button (click)="updateItemDur(item.id,'+',item.duration)" class="btn btn-success">+</button><button (click)="updateItemDur(item.id,'-',item.duration)" class="btn btn-success">-</button> Vrstni red:{{item.ord}} <button (click)="showhideImg(item)" class="btn btn-success">Prikazi/skrij</button><button (click)="deleteImg(item.id,item.name,item.type)" class="btn btn-success">zbrisi</button><button (click)="updateImgRed(item.id,'+')" class="btn btn-success">+</button><button (click)="updateImgRed(item.id,'-')" class="btn btn-success">-</button></span>
           </li></ng-container>
       </ul>
+     
+      <select formControlName="multipleTV" multiple *ngIf="multipleselect">
+        <ng-container *ngFor="let tv of tvs;let i=index">
+        
+          <option  *ngIf="tv.id!=multipleselect"  [value]="tv.id">{{tv.name}} {{tv.id}} </option>
+        </ng-container>
+          
+        </select>
+        <button  *ngIf="itemsForm.value.multipleTV && multipleselect" (click)="addToMultipleTV()">Dodaj {{itemsForm.value.multipleTV}}</button>
     </form>
  
 <h3>Dodaj TV</h3>

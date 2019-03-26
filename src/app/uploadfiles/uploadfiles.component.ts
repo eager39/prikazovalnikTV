@@ -1,21 +1,10 @@
-import {
-  Component,
-  OnInit,
-  ViewChild,
-  ElementRef
-} from '@angular/core';
-import {
-  FormBuilder,
-  FormGroup,
-  Validators,
-  FormControl
-} from "@angular/forms";
-import {
-  ApiDataService
-} from '../api-data.service';
-import {
-  isNumber
-} from 'util';
+import { Component, OnInit,ViewChild,ElementRef} from '@angular/core';
+import {FormBuilder,FormGroup,Validators,FormControl} from "@angular/forms";
+import {ApiDataService} from '../api-data.service';
+import { isNumber } from 'util';
+import * as XLSX from 'xlsx';
+import { GridColumnStyleBuilder } from '@angular/flex-layout/grid/typings/column/column';
+import { instantiateSupportedAnimationDriver } from '@angular/platform-browser/animations/src/providers';
 
 
 @Component({
@@ -38,16 +27,26 @@ export class UploadfilesComponent implements OnInit {
    currTVname
    currTVlocation
    tvid
+   data:any
+   message
+   columns=[]
+   multipleselect=false
+   itemall
+  
   @ViewChild('fileInput') fileInput: ElementRef;
   constructor(private fb: FormBuilder, private _dataService: ApiDataService, ) {
      this.createForm();
   }
+  excelForm = new FormGroup({
+   name: new FormControl(''),
+})
   imageForm = new FormGroup({
      red: new FormControl(''),
   })
   itemsForm = new FormGroup({
      ord: new FormControl(''),
-     tv: new FormControl("")
+     tv: new FormControl(""),
+     multipleTV:new FormControl("")
   })
   tvsForm = new FormGroup({
      name: new FormControl(''),
@@ -57,6 +56,84 @@ export class UploadfilesComponent implements OnInit {
      naslov: new FormControl(""),
      vsebina: new FormControl("")
   })
+
+  excel(evt: any) {
+   /* wire up file reader */
+   const target: DataTransfer = <DataTransfer>(evt.target);
+   if (target.files.length !== 1) throw new Error('Cannot use multiple files');
+   const reader: FileReader = new FileReader();
+   reader.onload = (e: any) => {
+     /* read workbook */
+     const bstr: string = e.target.result;
+     const wb: XLSX.WorkBook = XLSX.read(bstr, {type: 'binary'});
+
+     /* grab first sheet */
+     const wsname: string = wb.SheetNames[0];
+     const ws: XLSX.WorkSheet = wb.Sheets[wsname];
+
+     /* save data */
+     this.data = (XLSX.utils.sheet_to_json(ws, {header: 1}));
+     for(var i in this.data){
+      this.columns.push(this.data[i][0])
+     }
+     console.log(this.columns)
+    console.log(this.data)
+     
+   };
+   reader.readAsBinaryString(target.files[0]);
+ }
+ async addExcelData() {
+
+   var tvid = this.itemsForm.value.tv
+   var data = await this._dataService.add({
+      "graph": JSON.stringify(this.data),
+      "id": tvid,
+      "name":this.excelForm.value.name,
+      "columns":JSON.stringify(this.columns)
+   }, "addGraph").toPromise()
+   if (data) {
+      alert("uspešno dodano")
+      this.allImageVideo(this.selectedtv)
+
+   }else{
+      this.message="Napaka"
+      
+   }
+
+
+
+
+}
+showOtherTV(item){
+   if(item.id==this.multipleselect){
+      this.multipleselect=false
+      this.itemall=false
+
+   }else{
+      this.itemall=item
+      this.multipleselect=item.display
+   }
+
+}
+async addToMultipleTV(){
+  
+   var data = await this._dataService.add({
+      "item": this.itemall,
+      "id": this.itemsForm.value.multipleTV,
+   }, "addToOthers").toPromise()
+   if (data) {
+      alert("uspešno dodano")
+      this.allImageVideo(this.selectedtv)
+      this.multipleselect=false
+      this.itemall=false
+      this.itemsForm.value.multipleTV=""
+
+
+   }else{
+      
+      
+   }
+}
 
 
   createForm() {
@@ -366,5 +443,7 @@ async editTVs(id){
      
      this.selectedtv = this.itemsForm.value.tv
      this.allImageVideo(this.selectedtv);
+     this.getTVs()
+    this.multipleselect=false
   }
 }

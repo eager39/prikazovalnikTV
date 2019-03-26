@@ -29,6 +29,7 @@
     "@ngx-gallery/core": "^4.0.2-beta.0",
     "@types/chart.js": "^2.7.48",
     "angular-bootstrap-md": "^7.4.2",
+    "angular-google-charts": "^0.1.3",
     "bootstrap": "^4.3.1",
     "chart.js": "^2.7.3",
     "core-js": "^2.6.5",
@@ -40,6 +41,7 @@
     "simple-pdf-viewer": "^2.0.3",
     "tslib": "^1.9.0",
     "ui-carousel": "^0.2.0",
+    "xlsx": "^0.14.1",
     "zone.js": "^0.8.29"
   },
   "devDependencies": {

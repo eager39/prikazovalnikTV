@@ -5,6 +5,7 @@ import { environment } from '../../environments/environment';
 import { CarouselComponent } from 'angular-bootstrap-md';
 import { ActivatedRoute,Router, ActivationEnd } from '@angular/router';
 
+
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -29,19 +30,22 @@ export class HomeComponent implements OnInit {
      }
       private actionUrl: string=environment.baseUrl
      private sub:any;
-  data;
-  user;
-  interval;
-     apiurl;
-     tvid;
-     tvs;
+  data
+  user
+  interval
+     apiurl
+     tvid
+     tvs
+   
   ngOnInit() {
+ 
    this.apiurl=this.actionUrl
  
   this.interval = setInterval(() => {
     if(this.data.length=="0"){
       this.data=new Array
 this.userData()
+
     }
 
 
@@ -70,6 +74,10 @@ this.getTv()
     this.tvs = data
    
  }
+ getGraph(graph){
+   
+ }
+
  
 
   async userData() {

@@ -90,9 +90,10 @@ app.get('/data',cors(), function(req, res) {
 if(id=="all"){
    var sql = 'SELECT id,name,active,type,ord,duration FROM items WHERE active=1  ORDER BY type asc';
 }else{
-   var sql = 'SELECT id,name,active,type,ord,duration FROM items WHERE active=1 and display=? ORDER BY type asc';
+   var sql = 'SELECT id,name,active,type,ord,duration,graphs.name_graph,graphs.data,graphs.columns FROM items left JOIN graphs ON items.graph = graphs.id_graph WHERE active=1 and display in (?) ORDER BY type asc';
 }
    var slike = [];
+   var test=[]
    var data;
  //  var sql = 'SELECT id,name,active,type,ord,duration FROM items WHERE active=1 and display=? ORDER BY type asc';
    connection.query(sql,[id], function(err, results) {
@@ -121,7 +122,7 @@ if(id=="all"){
          // load all images in parallel
          for (var i = 0; i < data.length; i++) {
             if(data[i].type=="image" || data[i].type=="pdf"){
-
+               test.push(data[i])
                promises.push(getImage(data[i]));
             }
            
@@ -136,14 +137,14 @@ if(id=="all"){
          
          for (var i = 0; i < imageArray.length; i++) {
        
-            if(data[i].type=="image" || data[i].type=="pdf"){
+            if(test[i].type=="image" || data[i].type=="pdf"){
             
                 slike.push({
                "slika": imageArray[i].toString("base64"),
-               "name":data[i].name,
-               "type":data[i].type,
-               "ord":data[i].ord,
-               "dur":data[i].duration
+               "name":test[i].name,
+               "type":test[i].type,
+               "ord":test[i].ord,
+               "dur":test[i].duration
             })
             }
            
@@ -165,6 +166,17 @@ if(id=="all"){
                   "type":data[j].type,
                   "ord":data[j].ord,
                   "dur":data[i].duration
+               })
+            }
+            else if(data[j].type=="graph"){
+               
+               slike.push({
+                  "graph":JSON.parse(data[j].data),
+                  "columns":JSON.parse(data[j].columns),
+                  "name":data[j].name,
+                  "type":data[j].type,
+                  "ord":data[j].ord,
+                  "dur":data[j].duration
                })
             }
             
@@ -208,6 +220,7 @@ customtype="video"
       customtype="pdf"
    }
       try {
+         
          fs.writeFile(__dirname+"/upload/" + filename, image, "base64", function(err) {
             if (err) {
                
@@ -272,6 +285,38 @@ connection.query(sql, [name, location], function(err, results) {
    }
 })
 })
+app.post("/addGraph",async function(request,response){
+
+
+   var graph=request.body.graph
+   var columns=request.body.columns
+   var id=request.body.id
+   var name=request.body.name
+  var data=await getMaxOrd(id)
+ 
+   var type="graph"
+   var sql1="INSERT INTO graphs (data,columns,name_graph) VALUES (?,?,?)"
+   var sql2 = "INSERT INTO items (name,type,active,display,ord,graph) VALUES (?,?,?,?,?,?)";
+  
+   async function runquery(){
+      try {
+   var result1 = await connection.query(sql1,[graph,columns,name])
+  var result2=await connection.query(sql2,[name,type,1,id,data[0].currord,result1.insertId])
+
+  connection.query("COMMIT")
+  response.json(true);
+} catch(err) {
+   console.log(err)
+   connection.query("ROLLBACK")
+}
+   }
+   runquery()
+
+
+
+
+
+   })
 app.post("/addText",async function(request,response){
 
 
@@ -340,7 +385,7 @@ app.post('/auth', function(request, response) {
 });
 app.get("/uredi", function(request, response) {
  
-   var sql = "SELECT id,name,active,type,ord,display,duration FROM items WHERE display=? ORDER BY ord asc"
+   var sql = "SELECT id,name,active,type,ord,display,duration,graph FROM items WHERE display=? ORDER BY ord asc"
    connection.query(sql,[request.query.id], function(err, results) {
      
       response.json(results)
@@ -358,7 +403,7 @@ app.post("/deleteImg", function(request, response) {
    connection.query("START TRANSACTION")
    connection.query(sql, [id], function(err, results) {
       if (!err) {
-         if(type=="text"){
+         if(type=="text" || type=="graph"){
             connection.query("COMMIT")
             response.json(true);
          }else{
@@ -404,6 +449,39 @@ app.post("/deleteTV", function(request, response) {
          response.json(false)
       }
    })
+
+
+
+})
+app.post("/addToOthers", async function(request, response) {
+   connection.query = util.promisify(connection.query)
+   var promises=[]
+   
+   var data=request.body
+   console.log(data)
+   var name=data.item.name
+   var active=data.item.active
+   var type=data.item.type
+   var display=data.item.display
+   
+ 
+   var duration=data.item.duration
+   var graph=data.item.graph
+   
+  
+   var sql="INSERT INTO  items (name,active,type,display,ord,duration,graph) VALUES (?,?,?,?,?,?,?)";
+   for(let i=0;i<data.id.length;i++){
+      display=data.id[i]
+      var ord=await getMaxOrd(display)
+      promises.push(await connection.query(sql,[name,active,type,display,ord[0].currord,duration,graph]));
+   }
+  Promise.all(promises).then(function(values){
+     if(values){
+        response.json(true)
+     }else{
+        response.json(false)
+     }
+  } )
 
 
 

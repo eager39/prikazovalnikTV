@@ -1,6 +1,7 @@
 <head>
  <!-- <meta http-equiv="refresh" content="15">-->
 </head>
+
 <div class="container" *ngIf="tvid!='all' && data">
   <ng-container >
          <mdb-carousel (activeSlideChange)="change(asd)"  #asd [isControls]="false" [interval]="data[0]?.dur" [noPause]="1" >
@@ -11,9 +12,9 @@
               </video>
                 </mdb-carousel-item>-->
                         <mdb-carousel-item #troll id="test"  *ngFor="let slika of data;let i=index" >
-                                  <div class="textdiv">
-                                        <img *ngIf="slika.type=='image'"  class="d-block w-100 slika" [src]="'data:image/jpg;base64,'+slika.slika" alt="Second slide" >
-                                       </div> <video controls *ngIf="slika.type=='video' && i!=0" id="{{i}}" #video class="video-fluid" (play)="play()" (ended)="end(video)"  onloadedmetadata="this.muted=true"   >
+                          
+                                  <div class="textdiv"><img *ngIf="slika.type=='image'"  class="d-block w-100 slika" [src]="'data:image/jpg;base64,'+slika.slika" alt="Second slide" ></div>
+                                        <video controls *ngIf="slika.type=='video' && i!=0" id="{{i}}" #video class="video-fluid" (play)="play()" (ended)="end(video)"  onloadedmetadata="this.muted=true"   >
                                             <source [src]="apiurl+'video/'+slika.name" type="video/mp4" />
                                           </video>
                                           <video controls *ngIf="slika.type=='video'&& i==0" id="{{i}}" #video class="video-fluid" (play)="play()" (ended)="end(video)"  onloadedmetadata="this.muted=true" autoplay  >
@@ -23,6 +24,18 @@
                             
                                       <simple-pdf-viewer #pdfViewer removePageBorders=1 *ngIf="slika.type=='pdf'" [src]="'data:application/pdf;base64,'+slika.slika"></simple-pdf-viewer>
                                       <div *ngIf="slika.type=='text'" class="textdiv"><h1>{{slika.naslov}}</h1><p>{{slika.vsebina}}</p></div>
+                                    <div class="graphwrap">
+                                      <google-chart class="graph" *ngIf="slika.type=='graph'"
+                                      [title]="title"
+                                      [type]="'BarChart'"
+                                      [data]="slika.graph"
+                                     [height]="800"
+                                     [width]="800"
+                                      >
+                                      </google-chart>
+                                    </div>
+
+                                     
                               
                               
                               </mdb-carousel-item>
