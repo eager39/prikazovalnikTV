@@ -400,6 +400,7 @@ app.post("/deleteImg", function(request, response) {
    var name = request.body.name
    var type=request.body.type
    var sql = "DELETE FROM items WHERE id=?"
+   var sql2="SELECT count(name) as many FROM items" 
    connection.query("START TRANSACTION")
    connection.query(sql, [id], function(err, results) {
       if (!err) {
@@ -416,12 +417,21 @@ app.post("/deleteImg", function(request, response) {
            }else{
          
          try{
-            fs.unlink(__dirname+'/upload/'+name,function(err){
+            connection.query(sql2, function(err, results) {
+               if(results.many<1){
+                   fs.unlink(__dirname+'/upload/'+name,function(err){
                if(err) return console.log(err);
                console.log('file deleted successfully');
                connection.query("COMMIT")
                response.json(true);
-          });  
+                 });  
+               }else{
+                  connection.query("COMMIT")
+                  response.json(true);
+               }
+           
+            
+         })
          }catch(error){
             console.log(error)
             connection.query("ROLLBACK")
