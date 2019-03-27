@@ -137,7 +137,7 @@ if(id=="all"){
          
          for (var i = 0; i < imageArray.length; i++) {
        
-            if(test[i].type=="image" || data[i].type=="pdf"){
+            if(test[i].type=="image" || test[i].type=="pdf"){
             
                 slike.push({
                "slika": imageArray[i].toString("base64"),

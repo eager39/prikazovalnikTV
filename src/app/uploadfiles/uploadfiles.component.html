@@ -49,14 +49,14 @@ Ime grafa
           </li></ng-container>
       </ul>
      
-      <select formControlName="multipleTV" multiple *ngIf="multipleselect">
+      <select formControlName="multipleTV"  multiple *ngIf="multipleselect">
         <ng-container *ngFor="let tv of tvs;let i=index">
         
           <option  *ngIf="tv.id!=multipleselect"  [value]="tv.id">{{tv.name}} {{tv.id}} </option>
         </ng-container>
           
         </select>
-        <button  *ngIf="itemsForm.value.multipleTV && multipleselect" (click)="addToMultipleTV()">Dodaj {{itemsForm.value.multipleTV}}</button>
+        <button  *ngIf="itemsForm.value.multipleTV && multipleselect" (click)="addToMultipleTV()">Dodaj </button>
     </form>
  
 <h3>Dodaj TV</h3>

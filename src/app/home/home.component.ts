@@ -103,7 +103,7 @@ this.getTv()
     
     this.data.sort(compare);
  
-    
+    console.log(this.data)
   }
  
   logout(){

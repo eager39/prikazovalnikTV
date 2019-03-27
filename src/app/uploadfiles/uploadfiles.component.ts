@@ -32,6 +32,8 @@ export class UploadfilesComponent implements OnInit {
    columns=[]
    multipleselect=false
    itemall
+   selectedid
+   selectedtext
   
   @ViewChild('fileInput') fileInput: ElementRef;
   constructor(private fb: FormBuilder, private _dataService: ApiDataService, ) {
@@ -94,7 +96,7 @@ export class UploadfilesComponent implements OnInit {
    if (data) {
       alert("uspešno dodano")
       this.allImageVideo(this.selectedtv)
-
+      this.getTVs()
    }else{
       this.message="Napaka"
       
@@ -126,14 +128,15 @@ async addToMultipleTV(){
       this.allImageVideo(this.selectedtv)
       this.multipleselect=false
       this.itemall=false
-      this.itemsForm.value.multipleTV=""
-
+      
+      this.getTVs()
 
    }else{
       
       
    }
 }
+
 
 
   createForm() {
@@ -223,7 +226,7 @@ async editTVs(id){
      }, "deleteVid").subscribe(
         (val) => {
            this.allImageVideo(this.selectedtv);
-
+           this.getTVs()
          
         },
         response => {
@@ -410,6 +413,7 @@ async editTVs(id){
      if (data) {
         alert("uspešno dodano")
         this.allImageVideo(this.selectedtv)
+        this.getTVs()
      }
 
 
