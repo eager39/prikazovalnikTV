@@ -27,7 +27,7 @@ CREATE TABLE `displays` (
   `name` varchar(45) DEFAULT NULL,
   `location` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -36,7 +36,7 @@ CREATE TABLE `displays` (
 
 LOCK TABLES `displays` WRITE;
 /*!40000 ALTER TABLE `displays` DISABLE KEYS */;
-INSERT INTO `displays` VALUES (13,'test','test'),(14,'test2','test2');
+INSERT INTO `displays` VALUES (14,'TV 2','lokacija'),(15,'TV 3','lokacija'),(16,'TV 4','lokacija'),(17,'TV 5','lokacija'),(18,'TV 6','lokacija');
 /*!40000 ALTER TABLE `displays` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -53,7 +53,7 @@ CREATE TABLE `graphs` (
   `columns` varchar(500) DEFAULT NULL,
   `name_graph` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`id_graph`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -62,7 +62,7 @@ CREATE TABLE `graphs` (
 
 LOCK TABLES `graphs` WRITE;
 /*!40000 ALTER TABLE `graphs` DISABLE KEYS */;
-INSERT INTO `graphs` VALUES (14,'[[\"jan\",2010],[\"feb\",2011],[\"mar\",2012],[\"apr\",2013],[\"may\",2014],[\"jun\",2015],[\"jul\",2016],[\"aug\",2017]]','[\"jan\",\"feb\",\"mar\",\"apr\",\"may\",\"jun\",\"jul\",\"aug\"]','qqqqqqqqq'),(15,'[[\"jan\",2010],[\"feb\",2011],[\"mar\",2012],[\"apr\",2013],[\"may\",2014],[\"jun\",2015],[\"jul\",2016],[\"aug\",2017]]','[\"jan\",\"feb\",\"mar\",\"apr\",\"may\",\"jun\",\"jul\",\"aug\"]','aaaaaaaaaaa');
+INSERT INTO `graphs` VALUES (2,'[[\"jan\",12],[\"feb\",120],[\"mar\",800],[\"apr\",2000],[\"may\",500],[\"jun\",2015],[\"jul\",300],[\"aug\",1]]','[\"jan\",\"feb\",\"mar\",\"apr\",\"may\",\"jun\",\"jul\",\"aug\"]','Graf 1');
 /*!40000 ALTER TABLE `graphs` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -79,13 +79,15 @@ CREATE TABLE `items` (
   `type` varchar(45) NOT NULL,
   `active` int(11) NOT NULL,
   `ord` int(11) DEFAULT '0',
-  `display` int(30) NOT NULL,
   `duration` varchar(45) DEFAULT '5000',
   `graph` int(11) DEFAULT NULL,
+  `display` int(30) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_items_graphs1_idx` (`graph`),
+  KEY `fk_items_displays1_idx` (`display`),
+  CONSTRAINT `fk_items_displays1` FOREIGN KEY (`display`) REFERENCES `displays` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_items_graphs1` FOREIGN KEY (`graph`) REFERENCES `graphs` (`id_graph`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=172 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=210 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -94,7 +96,7 @@ CREATE TABLE `items` (
 
 LOCK TABLES `items` WRITE;
 /*!40000 ALTER TABLE `items` DISABLE KEYS */;
-INSERT INTO `items` VALUES (165,'qqqqqqqqq','graph',1,0,13,'5000',14),(166,'aaaaaaaaaaa','graph',1,1,13,'5000',15),(169,'qqqqqqqqq','graph',1,0,14,'5000',14),(170,'aaaaaaaaaaa','graph',1,2,14,'5000',15),(171,'aaaaaaaaaaa','graph',1,3,14,'5000',15);
+INSERT INTO `items` VALUES (205,'Graf 1','graph',1,0,'5000',2,18),(206,'Graf 1','graph',1,0,'5000',2,14),(207,'Graf 1','graph',1,0,'5000',2,15),(208,'Graf 1','graph',1,0,'5000',2,16),(209,'Graf 1','graph',1,0,'5000',2,17);
 /*!40000 ALTER TABLE `items` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -133,4 +135,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-03-26 21:32:33
+-- Dump completed on 2019-03-27 11:25:03
