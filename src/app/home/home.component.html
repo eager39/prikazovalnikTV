@@ -27,10 +27,12 @@
                                     <div class="graphwrap">
                                       <google-chart class="graph" *ngIf="slika.type=='graph'"
                                       [title]="title"
-                                      [type]="'BarChart'"
+                                      [type]=slika.graph_type
                                       [data]="slika.graph"
-                                     [height]="800"
-                                     [width]="800"
+                                     [height]="900"
+                                     [width]="1200"
+                                     [options]="{vAxis: {title: 'kWh'}}"
+                                      [columnNames]="slika.columns"
                                       >
                                       </google-chart>
                                     </div>

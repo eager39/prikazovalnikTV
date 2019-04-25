@@ -36,14 +36,18 @@ export class HomeComponent implements OnInit {
      apiurl
      tvid
      tvs
+     myOptions
    
   ngOnInit() {
+   this.myOptions = {
+   
+    };
  
    this.apiurl=this.actionUrl
  
   this.interval = setInterval(() => {
     if(this.data.length=="0"){
-      this.data=new Array
+      this.data=new Array()
 this.userData()
 
     }

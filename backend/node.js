@@ -90,7 +90,7 @@ app.get('/data',cors(), function(req, res) {
 if(id=="all"){
    var sql = 'SELECT id,name,active,type,ord,duration FROM items WHERE active=1  ORDER BY type asc';
 }else{
-   var sql = 'SELECT id,name,active,type,ord,duration,graphs.name_graph,graphs.data,graphs.columns FROM items left JOIN graphs ON items.graph = graphs.id_graph WHERE active=1 and display in (?) ORDER BY type asc';
+   var sql = 'SELECT id,name,active,type,ord,duration,graphs.name_graph,graphs.data,graphs.columns,graphs.graph_type FROM items left JOIN graphs ON items.graph = graphs.id_graph WHERE active=1 and display in (?) ORDER BY type asc';
 }
    var slike = [];
    var test=[]
@@ -176,7 +176,8 @@ if(id=="all"){
                   "name":data[j].name,
                   "type":data[j].type,
                   "ord":data[j].ord,
-                  "dur":data[j].duration
+                  "dur":data[j].duration,
+                  "graph_type":data[j].graph_type
                })
             }
             
@@ -292,15 +293,16 @@ app.post("/addGraph",async function(request,response){
    var columns=request.body.columns
    var id=request.body.id
    var name=request.body.name
+   var graph_type=request.body.graph_type
   var data=await getMaxOrd(id)
  
    var type="graph"
-   var sql1="INSERT INTO graphs (data,columns,name_graph) VALUES (?,?,?)"
+   var sql1="INSERT INTO graphs (data,columns,name_graph,graph_type) VALUES (?,?,?,?)"
    var sql2 = "INSERT INTO items (name,type,active,display,ord,graph) VALUES (?,?,?,?,?,?)";
   
    async function runquery(){
       try {
-   var result1 = await connection.query(sql1,[graph,columns,name])
+   var result1 = await connection.query(sql1,[graph,columns,name,graph_type])
   var result2=await connection.query(sql2,[name,type,1,id,data[0].currord,result1.insertId])
 
   connection.query("COMMIT")

@@ -41,6 +41,7 @@ export class UploadfilesComponent implements OnInit {
   }
   excelForm = new FormGroup({
    name: new FormControl(''),
+   graph_type:new FormControl("")
 })
   imageForm = new FormGroup({
      red: new FormControl(''),
@@ -75,10 +76,11 @@ export class UploadfilesComponent implements OnInit {
 
      /* save data */
      this.data = (XLSX.utils.sheet_to_json(ws, {header: 1}));
-     for(var i in this.data){
-      this.columns.push(this.data[i][0])
+     for(var i=0;i<this.data[0].length;i++){
+      this.columns.push(this.data[0][i])
      }
      console.log(this.columns)
+     this.data.shift()
     console.log(this.data)
      
    };
@@ -91,6 +93,7 @@ export class UploadfilesComponent implements OnInit {
       "graph": JSON.stringify(this.data),
       "id": tvid,
       "name":this.excelForm.value.name,
+      "graph_type":this.excelForm.value.graph_type,
       "columns":JSON.stringify(this.columns)
    }, "addGraph").toPromise()
    if (data) {
