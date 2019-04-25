@@ -8,6 +8,7 @@ Ime grafa
 <select  formControlName="graph_type" >
   <option   value="ColumnChart">Stolpčni</option>
   <option value="BarChart">Vrstični</option>
+  <option value="LineChart">Črtni</option>
 </select>
 <button type="submit" [disabled]="form.invalid || loading" class="btn btn-success">Naloži <i class="fa fa-spinner fa-spin fa-fw" *ngIf="loading"></i></button>
 {{message}}

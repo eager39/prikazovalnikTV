@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.7.9, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 5.7.17, for Win64 (x86_64)
 --
--- Host: localhost    Database: displaytv
+-- Host: 127.0.0.1    Database: displaytv
 -- ------------------------------------------------------
--- Server version	5.5.5-10.1.9-MariaDB
+-- Server version	5.5.5-10.1.37-MariaDB
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -52,8 +52,9 @@ CREATE TABLE `graphs` (
   `data` varchar(500) DEFAULT NULL,
   `columns` varchar(500) DEFAULT NULL,
   `name_graph` varchar(45) DEFAULT NULL,
+  `graph_type` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`id_graph`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -62,7 +63,7 @@ CREATE TABLE `graphs` (
 
 LOCK TABLES `graphs` WRITE;
 /*!40000 ALTER TABLE `graphs` DISABLE KEYS */;
-INSERT INTO `graphs` VALUES (2,'[[\"jan\",12],[\"feb\",120],[\"mar\",800],[\"apr\",2000],[\"may\",500],[\"jun\",2015],[\"jul\",300],[\"aug\",1]]','[\"jan\",\"feb\",\"mar\",\"apr\",\"may\",\"jun\",\"jul\",\"aug\"]','Graf 1');
+INSERT INTO `graphs` VALUES (2,'[[\"jan\",12],[\"feb\",120],[\"mar\",800],[\"apr\",2000],[\"may\",500],[\"jun\",2015],[\"jul\",300],[\"aug\",1]]','[\"jan\",\"feb\",\"mar\",\"apr\",\"may\",\"jun\",\"jul\",\"aug\"]','Graf 1',NULL),(7,'[[\"januar\",100,200],[\"februar\",200,300],[\"marec\",300,400],[\"april\",400,500],[\"maj\",500,600],[\"junij\",600,700],[\"julij\",700,800],[\"avgust\",1000,900],[\"september\",350,1000],[\"oktober\",100,1],[\"november\",2000,2],[\"december\",250,3]]','[\"mesec\",\"value\",\"value\"]','qwe','ColumnChart'),(10,'[[\"januar\",100,200],[\"februar\",200,300],[\"marec\",300,400],[\"april\",400,500],[\"maj\",500,600],[\"junij\",600,700],[\"julij\",700,800],[\"avgust\",1000,900],[\"september\",350,1000],[\"oktober\",100,100],[\"november\",2000,200],[\"december\",250,300]]','[\"mesec\",\"value\",\"value\"]','graf','ColumnChart');
 /*!40000 ALTER TABLE `graphs` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -87,7 +88,7 @@ CREATE TABLE `items` (
   KEY `fk_items_displays1_idx` (`display`),
   CONSTRAINT `fk_items_displays1` FOREIGN KEY (`display`) REFERENCES `displays` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_items_graphs1` FOREIGN KEY (`graph`) REFERENCES `graphs` (`id_graph`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=210 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=231 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -96,35 +97,9 @@ CREATE TABLE `items` (
 
 LOCK TABLES `items` WRITE;
 /*!40000 ALTER TABLE `items` DISABLE KEYS */;
-INSERT INTO `items` VALUES (205,'Graf 1','graph',1,0,'5000',2,18),(206,'Graf 1','graph',1,0,'5000',2,14),(207,'Graf 1','graph',1,0,'5000',2,15),(208,'Graf 1','graph',1,0,'5000',2,16),(209,'Graf 1','graph',1,0,'5000',2,17);
+INSERT INTO `items` VALUES (205,'Graf 1','graph',1,0,'5000',2,18),(207,'Graf 1','graph',1,0,'5000',2,15),(208,'Graf 1','graph',1,0,'5000',2,16),(209,'Graf 1','graph',1,0,'5000',2,17),(210,'Graf 1','graph',1,1,'5000',2,15),(211,'Graf 1','graph',1,1,'5000',2,16),(213,'Graf 1','graph',1,1,'5000',2,18),(221,'qwe','graph',1,2,'5000',7,15),(222,'qwe','graph',1,2,'5000',7,16),(223,'qwe','graph',1,1,'5000',7,17),(224,'qwe','graph',1,2,'5000',7,18),(225,'16maxresdefault.jpg','image',1,3,'5000',NULL,16),(228,'16maxresdefault.jpg','image',1,2,'5000',NULL,17),(229,'16maxresdefault.jpg','image',1,3,'5000',NULL,18),(230,'graf','graph',1,0,'5000',10,14);
 /*!40000 ALTER TABLE `items` ENABLE KEYS */;
 UNLOCK TABLES;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `displaytv`.`items_AFTER_DELETE`
-AFTER DELETE ON `displaytv`.`items`
-FOR EACH ROW
-BEGIN
-DECLARE updatecount INT;
-  set updatecount = ( select count(*) from items where graph = old.graph );
-  if updatecount=0
-    then
-     DELETE FROM graphs WHERE id_graph=old.graph;
-  end if;
-
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -135,4 +110,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-03-27 11:25:03
+-- Dump completed on 2019-04-25 15:36:59
