@@ -7,6 +7,7 @@ var conf = require('./config')
 conf = new conf()
 const fs = require('fs')
 var util = require('util')
+var unzip = require('unzip');
 
 
 var connection = mysql.createConnection({
@@ -121,7 +122,7 @@ if(id=="all"){
          var promises = [];
          // load all images in parallel
          for (var i = 0; i < data.length; i++) {
-            if(data[i].type=="image" || data[i].type=="pdf"){
+            if(data[i].type=="image" || data[i].type=="pdf" || data[i].type=="multipart/related" || data[i].type=="html"){
                test.push(data[i])
                promises.push(getImage(data[i]));
             }
@@ -137,7 +138,7 @@ if(id=="all"){
          
          for (var i = 0; i < imageArray.length; i++) {
        
-            if(test[i].type=="image" || test[i].type=="pdf"){
+            if(test[i].type=="image" || test[i].type=="pdf" || data[i].type=="multipart/related"||  data[i].type=="html"){
             
                 slike.push({
                "slika": imageArray[i].toString("base64"),
@@ -207,10 +208,11 @@ app.post("/image",async function(request, response) {
    var filename =display+ request.body.item.filename
    var image = request.body.item.value;
    var filetype = request.body.item.filetype;
+   console.log(filetype)
    
    var customtype;
    var data=await getMaxOrd(display)
-  
+  var path="/upload/"
  
    if(filetype.includes("video")){
 customtype="video"
@@ -220,9 +222,21 @@ customtype="video"
    }else if(filetype.includes("pdf")){
       customtype="pdf"
    }
+   else if(filetype.includes("multipart/related")){
+      customtype="html"
+   } else if(filetype.includes("htm")){
+      customtype="html"
+      
+   }else if(filetype.includes("zip")){
+      
+      customtype="zip"
+   }
+   if(customtype!="zip"){
+
+   
       try {
          
-         fs.writeFile(__dirname+"/upload/" + filename, image, "base64", function(err) {
+         fs.writeFile(__dirname+path + filename, image, "base64", function(err) {
             if (err) {
                
                 response.json(false)
@@ -246,6 +260,34 @@ customtype="video"
 
       } catch (err) {
          console.log(err)
+      }
+   }
+      if(customtype=="html"){
+         fs.writeFile(__dirname+"/../src/assets/" + filename, image, "base64", function(err) {
+            if (err) {
+               
+                response.json(false)
+               return console.log(err);
+              
+            }
+         });
+      }
+      if(customtype=="zip"){
+        
+var Readable = require('stream').Readable
+
+const imgBuffer = Buffer.from(image, 'base64')
+
+var s = new Readable()
+
+s.push(imgBuffer)   
+s.push(null) 
+ 
+//s.pipe(fs.createWriteStream("zip.zip"));
+
+
+         s.pipe(unzip.Extract({ path: __dirname+"/../src/assets/" }));
+         response.json(true);
       }
   
    

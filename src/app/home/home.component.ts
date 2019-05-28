@@ -131,7 +131,7 @@ this.getTv()
      change(item){
        
       this.c++
-if(this.c>(this.data.length*4)-1){
+if(this.c>(this.data.length*5)-1){
   this.data=new Array
 this.userData()
 this.c=0

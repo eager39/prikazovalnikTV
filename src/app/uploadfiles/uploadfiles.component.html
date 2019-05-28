@@ -1,5 +1,6 @@
-<form [formGroup]="excelForm" *ngIf="itemsForm.value.tv" (ngSubmit)="addExcelData()">
-<h2>
+<!--  <h2><form [formGroup]="excelForm" *ngIf="itemsForm.value.tv" (ngSubmit)="addExcelData()">
+
+
   Dodaj excel datoteko za graf
 </h2>
 <input type="file" (change)="excel($event)" multiple="false" />
@@ -12,10 +13,10 @@ Ime grafa
 </select>
 <button type="submit" [disabled]="form.invalid || loading" class="btn btn-success">Naloži <i class="fa fa-spinner fa-spin fa-fw" *ngIf="loading"></i></button>
 {{message}}
-</form>
+</form>-->
 <h1>Dodajanje in urejanje posamičnih slidov</h1>
 
-<h2 *ngIf="itemsForm.value.tv">Dodaj slikovni, video, pdf slide</h2>
+<h2 *ngIf="itemsForm.value.tv">Dodaj slikovni, video, pdf slide,html</h2>
 <form [formGroup]="form" *ngIf="itemsForm.value.tv" (ngSubmit)="onSubmit()">
   
     <div class="form-group">
@@ -29,12 +30,13 @@ Ime grafa
     <ng-container *ngIf="uspeh">Uspešno naloženo</ng-container>
     <ng-container *ngIf="napaka">Napaka </ng-container>
   </form>
+  <!--
   <h2 *ngIf="itemsForm.value.tv">Dodaj besedilni slide</h2>
   <form [formGroup]="uploadTextForm" *ngIf="itemsForm.value.tv" (ngSubmit)="addText()">
   Naslov  <input type="text" formControlName="naslov">
   Vsebina  <input type="text" formControlName="vsebina">
   <button type="submit" class="btn btn-success" >Dodaj</button>
-  </form>
+  </form>-->
  
   <form [formGroup]="itemsForm" (keydown.enter)="$event.preventDefault()">
     <h3 *ngIf="!itemsForm.value.tv">Izberi TV za urejanje</h3>

@@ -311,6 +311,8 @@ async editTVs(id){
         let file = event.target.files[0];
         reader.readAsDataURL(file);
         reader.onload = () => {
+        
+           console.log(file.type)
            this.form.get('avatar').setValue({
               filename: file.name,
               filetype: file.type,
@@ -321,7 +323,9 @@ async editTVs(id){
   }
 
   onSubmit() {
+
      const formModel = this.form.value;
+    
     if(!this.form.value.avatar){ 
       this.napaka=true;
       return false;

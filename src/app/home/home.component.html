@@ -1,10 +1,11 @@
 <head>
  <!-- <meta http-equiv="refresh" content="15">-->
+ 
 </head>
 
 <div class="container" *ngIf="tvid!='all' && data">
   <ng-container >
-         <mdb-carousel (activeSlideChange)="change(asd)"  #asd [isControls]="false" [interval]="data[0]?.dur" [noPause]="1" >
+         <mdb-carousel class="haha" (activeSlideChange)="change(asd)"  #asd [isControls]="false" [interval]="data[0]?.dur" [noPause]="1" >
            
               <!--<mdb-carousel-item >
                   <video #video  class="video-fluid" (play)="play()" (ended)="end()"  onloadedmetadata="this.muted=true" autoplay >
@@ -20,6 +21,9 @@
                                           <video controls *ngIf="slika.type=='video'&& i==0" id="{{i}}" #video class="video-fluid" (play)="play()" (ended)="end(video)"  onloadedmetadata="this.muted=true" autoplay  >
                                             <source [src]="apiurl+'video/'+slika.name" type="video/mp4" />
                                           </video>
+                                          <div class="iframe" *ngIf="slika.type=='html'">
+                                            <iframe scrolling="no" height="800px"  [src]="'assets/'+slika.name | safe" > </iframe>
+                                          </div>
                                          
                             
                                       <simple-pdf-viewer #pdfViewer removePageBorders=1 *ngIf="slika.type=='pdf'" [src]="'data:application/pdf;base64,'+slika.slika"></simple-pdf-viewer>
