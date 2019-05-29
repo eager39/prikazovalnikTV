@@ -30,13 +30,13 @@ Ime grafa
     <ng-container *ngIf="uspeh">Uspešno naloženo</ng-container>
     <ng-container *ngIf="napaka">Napaka </ng-container>
   </form>
-  <!--
+  
   <h2 *ngIf="itemsForm.value.tv">Dodaj besedilni slide</h2>
   <form [formGroup]="uploadTextForm" *ngIf="itemsForm.value.tv" (ngSubmit)="addText()">
   Naslov  <input type="text" formControlName="naslov">
   Vsebina  <input type="text" formControlName="vsebina">
   <button type="submit" class="btn btn-success" >Dodaj</button>
-  </form>-->
+  </form>
  
   <form [formGroup]="itemsForm" (keydown.enter)="$event.preventDefault()">
     <h3 *ngIf="!itemsForm.value.tv">Izberi TV za urejanje</h3>
