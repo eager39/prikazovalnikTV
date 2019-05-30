@@ -1,10 +1,9 @@
 import { Component, OnInit,ViewChild,ElementRef} from '@angular/core';
 import {FormBuilder,FormGroup,Validators,FormControl} from "@angular/forms";
 import {ApiDataService} from '../api-data.service';
-import { isNumber } from 'util';
+import {AuthService} from '../auth.service'
 import * as XLSX from 'xlsx';
-import { GridColumnStyleBuilder } from '@angular/flex-layout/grid/typings/column/column';
-import { instantiateSupportedAnimationDriver } from '@angular/platform-browser/animations/src/providers';
+
 
 
 @Component({
@@ -36,7 +35,7 @@ export class UploadfilesComponent implements OnInit {
    selectedtext
   
   @ViewChild('fileInput') fileInput: ElementRef;
-  constructor(private fb: FormBuilder, private _dataService: ApiDataService, ) {
+  constructor(private fb: FormBuilder, private _dataService: ApiDataService, private auth: AuthService ) {
      this.createForm();
   }
   excelForm = new FormGroup({
@@ -400,11 +399,12 @@ async editTVs(id){
         return false;
      }
      var data = await this._dataService.add(form, "addTVs").toPromise()
+     console.log(data)
      if (data) {
         alert("uspešno dodana naprava")
         this.getTVs()
      } else {
-        alert("error")
+        alert("Omejeno število zaslonov na 12!")
      }
 
   }
@@ -456,5 +456,9 @@ async editTVs(id){
      this.allImageVideo(this.selectedtv);
      this.getTVs()
     this.multipleselect=false
+  }
+  logout(){
+     
+     this.auth.logout()
   }
 }

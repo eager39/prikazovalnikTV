@@ -22,7 +22,7 @@
                                             <source [src]="apiurl+'video/'+slika.name" type="video/mp4" />
                                           </video>
                                           <div class="iframe" *ngIf="slika.type=='html'">
-                                            <iframe scrolling="no" height="800px"  [src]="'assets/'+slika.name | safe" > </iframe>
+                                            <iframe scrolling="no" height="800px"  [src]="'./assets/'+slika.name | safe" > </iframe>
                                           </div>
                                          
                             

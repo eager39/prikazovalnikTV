@@ -5,10 +5,11 @@ var mysql = require('mysql')
 const app = express()
 var conf = require('./config')
 conf = new conf()
-const fs = require('fs')
+const fs = require('fs-extra')
 var util = require('util')
 var unzip = require('unzip');
-
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 
 var connection = mysql.createConnection({
    host: 'localhost',
@@ -35,6 +36,25 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json({
    limit: '50mb'
 }));
+
+
+
+function checkTokenWithPromise(req){
+   return new Promise((resolve, reject) => {
+     var token = req.headers['authorization'];
+     
+     if (token) {
+       jwt.verify(token, "asd", function(err, decoded) {
+         if (err) {
+           reject(err);
+         } else {
+           decoded= jwt.decode(token); 
+           resolve(decoded.user);
+         }
+       });
+     }
+   });
+ }
 
 
 app.get('/video/:id',cors(), function(req, res) {
@@ -91,7 +111,7 @@ app.get('/data',cors(), function(req, res) {
 if(id=="all"){
    var sql = 'SELECT id,name,active,type,ord,duration FROM items WHERE active=1  ORDER BY type asc';
 }else{
-   var sql = 'SELECT id,name,active,type,ord,duration,graphs.name_graph,graphs.data,graphs.columns,graphs.graph_type FROM items left JOIN graphs ON items.graph = graphs.id_graph WHERE active=1 and display in (?) ORDER BY type asc';
+   var sql = 'SELECT id,name,active,type,ord,duration FROM items  WHERE active=1 and display in (?) ORDER BY type asc';
 }
    var slike = [];
    var test=[]
@@ -100,7 +120,7 @@ if(id=="all"){
    connection.query(sql,[id], function(err, results) {
       if (err) throw err
       data = results;
-      
+     
       var type;
       function getImage(image) {
          
@@ -200,7 +220,7 @@ if(id=="all"){
 });
 
 app.post("/image",async function(request, response) {
-  
+   checkTokenWithPromise(request).then(async user => {
    if (!request.body.item.value) {
       response.json(false)
       return false;
@@ -291,8 +311,10 @@ s.push(null)
       }
   
    
-     
-  
+   }, err => {
+      console.log("No such user. Error: " + err);
+    });
+   
 
 });
  function getMaxOrd(display){
@@ -314,19 +336,32 @@ s.push(null)
 
 }
 
-app.post("/addTVs",function(request,response){
+app.post("/addTVs",async function(request,response){
+   checkTokenWithPromise(request).then(async user => {
    if(!request.body.name){
       response.status(400).json(false)
       return false;
    }
+
 var name=request.body.name
 var location=request.body.location
-var sql = "INSERT INTO displays (name,location) VALUES (?,?)";
+connection.query = util.promisify(connection.query)
+var csql="SELECT count(id) as number FROM displays"
+var result=await connection.query(csql)
+if(result[0].number>=12){
+   response.json(false)
+}else{
+   var sql = "INSERT INTO displays (name,location) VALUES (?,?)";
+
 connection.query(sql, [name, location], function(err, results) {
    if(!err){
       response.status(200).json(true)
    }
 })
+}
+}, err => {
+   console.log("No such user. Error: " + err);
+ });
 })
 app.post("/addGraph",async function(request,response){
 
@@ -362,7 +397,7 @@ app.post("/addGraph",async function(request,response){
 
    })
 app.post("/addText",async function(request,response){
-
+   checkTokenWithPromise(request).then(async user => {
 
    var name=request.body.text
    var id=request.body.id
@@ -376,7 +411,11 @@ app.post("/addText",async function(request,response){
       }
       
    })
+}, err => {
+   console.log("No such user. Error: " + err);
+ })
    })
+   
 
 app.get("/getTVs",function(request,response){
    var sql = "SELECT *,(SELECT count(items.id) FROM items WHERE displays.id=items.display) as numOfSlides FROM displays ";
@@ -399,47 +438,55 @@ app.get("/numOfTVs",function(request,response){
 
 app.post('/auth', function(request, response) {
 
-
+//https://www.devglan.com/online-tools/bcrypt-hash-generator for generating correct hash
    var username = request.body.username;
    var password = request.body.password;
 
 
-   var sql = "SELECT * FROM user WHERE username = ? AND password = ?";
-   connection.query(sql, [username, password], function(err, results) {
+   var sql = "SELECT * FROM user WHERE username = ?";
+   connection.query(sql, [username], function(err, results) {
       if (err) {
-         res.send(false);
+         response.send(false);
       } else if (results == "") {
          response.status(200).json(false);
       } else {
-         /*
-         const JWTToken = jwt.sign({
+         bcrypt.compare(password, results[0].password, function(err, res) {
+            if(res==true){
+                 const JWTToken = jwt.sign({
              user: results[0].id
            },
            'asd', {
              expiresIn: 144000
-           });*/
+           });
          response.status(200).json({
-            token: "token",
+            token: JWTToken,
             user: username
          });
+            }else{
+               response.json(false)
+            }
+        });
+       
       }
    });
 
 
 });
 app.get("/uredi", function(request, response) {
- 
-   var sql = "SELECT id,name,active,type,ord,display,duration,graph FROM items WHERE display=? ORDER BY ord asc"
+   checkTokenWithPromise(request).then(async user => {
+   var sql = "SELECT id,name,active,type,ord,display,duration FROM items WHERE display=? ORDER BY ord asc"
    connection.query(sql,[request.query.id], function(err, results) {
-     
+     console.log(results)
       response.json(results)
    })
 
-
+}, err => {
+   console.log("No such user. Error: " + err);
+ })
 
 })
 app.post("/deleteImg", function(request, response) {
-
+   checkTokenWithPromise(request).then(async user => {
    var id = request.body.id
    var name = request.body.name
    var type=request.body.type
@@ -448,10 +495,11 @@ app.post("/deleteImg", function(request, response) {
    connection.query("START TRANSACTION")
    connection.query(sql, [id], function(err, results) {
       if (!err) {
+         console.log(type)
          if(type=="text" || type=="graph"){
             connection.query("COMMIT")
             response.json(true);
-         }else{
+         }else{console.log("type")
 
          fs.stat(__dirname+'/upload/'+name, function (err, stats) {
            if(err){
@@ -461,10 +509,38 @@ app.post("/deleteImg", function(request, response) {
            }else{
          
          try{
+            console.log("type")
             connection.query(sql2, function(err, results) {
-               if(results.many<1){
+               if(results[0].many<2 ){
+                  console.log("haha")
                    fs.unlink(__dirname+'/upload/'+name,function(err){
                if(err) return console.log(err);
+                  if(type=="html"){
+                   
+                  
+                  fs.remove(__dirname+'/../src/assets/'+name,function(err){
+                        if(err){
+                           console.log(err)
+                        }else{
+                           name= name.split(".",1)
+                           console.log(name)
+                           var folder=name[0].split(/([^0-9]+)/)
+                           folder=folder[1]+folder[2]
+                           console.log(folder)
+                        
+                              /*            
+                        var regex = new RegExp(folder)
+                           fs.readdir(__dirname+"/../src/assets/")
+                               .filter(f => regex.test(f))
+                               .map(f => fs.remove(__dirname+"/../src/assets/" + f))
+*/
+
+                           fs.remove(__dirname+'/../src/assets/'+folder+"_datoteke",function(err){
+                          console.log(err)
+                           })
+                        }
+                  })
+                  }
                console.log('file deleted successfully');
                connection.query("COMMIT")
                response.json(true);
@@ -486,11 +562,13 @@ app.post("/deleteImg", function(request, response) {
       }
    })
 
-
+}, err => {
+   console.log("No such user. Error: " + err);
+ })
 
 })
 app.post("/deleteTV", function(request, response) {
-
+   checkTokenWithPromise(request).then(async user => {
    var id = request.body.id
   
    var sql = "DELETE FROM displays WHERE id=?"
@@ -504,10 +582,13 @@ app.post("/deleteTV", function(request, response) {
       }
    })
 
-
+}, err => {
+   console.log("No such user. Error: " + err);
+ })
 
 })
 app.post("/addToOthers", async function(request, response) {
+   checkTokenWithPromise(request).then(async user => {
    connection.query = util.promisify(connection.query)
    var promises=[]
    
@@ -523,11 +604,11 @@ app.post("/addToOthers", async function(request, response) {
    var graph=data.item.graph
    
   
-   var sql="INSERT INTO  items (name,active,type,display,ord,duration,graph) VALUES (?,?,?,?,?,?,?)";
+   var sql="INSERT INTO  items (name,active,type,display,ord,duration) VALUES (?,?,?,?,?,?)";
    for(let i=0;i<data.id.length;i++){
       display=data.id[i]
       var ord=await getMaxOrd(display)
-      promises.push(await connection.query(sql,[name,active,type,display,ord[0].currord,duration,graph]));
+      promises.push(await connection.query(sql,[name,active,type,display,ord[0].currord,duration]));
    }
   Promise.all(promises).then(function(values){
      if(values){
@@ -536,12 +617,14 @@ app.post("/addToOthers", async function(request, response) {
         response.json(false)
      }
   } )
-
+}, err => {
+   console.log("No such user. Error: " + err);
+ })
 
 
 })
 app.post("/editTV", function(request, response) {
-
+   checkTokenWithPromise(request).then(async user => {
    var id = request.body.id
    var name = request.body.name
    var location = request.body.location
@@ -551,12 +634,14 @@ app.post("/editTV", function(request, response) {
          response.json(true);
       }
    })
-
+}, err => {
+   console.log("No such user. Error: " + err);
+ })
 
 
 })
 app.post("/showhideImg", function(request, response) {
-
+   checkTokenWithPromise(request).then(async user => {
    var id = request.body.id
    var active = request.body.active
    var sql = "UPDATE items set active=? WHERE id=?"
@@ -565,12 +650,13 @@ app.post("/showhideImg", function(request, response) {
          response.json(true);
       }
    })
-
-
+}, err => {
+   console.log("No such user. Error: " + err);
+ })
 
 })
 app.post("/showhideVid", function(request, response) {
-
+   checkTokenWithPromise(request).then(async user => {
    var id = request.body.id
    var active = request.body.active
    var sql = "UPDATE items set active=? WHERE id=?"
@@ -580,11 +666,13 @@ app.post("/showhideVid", function(request, response) {
       }
    })
 
-
+}, err => {
+   console.log("No such user. Error: " + err);
+ })
 
 })
 app.post("/deleteVid", function(request, response) {
-
+   checkTokenWithPromise(request).then(async user => {
    var id = request.body.id
    var name=request.body.name
    var sql = "DELETE FROM items WHERE id=?"
@@ -615,11 +703,14 @@ app.post("/deleteVid", function(request, response) {
        })
       }
    })
-
+}, err => {
+   console.log("No such user. Error: " + err);
+ })
 
 
 })
 app.post("/updateImgRed", function(request, response) {
+   checkTokenWithPromise(request).then(async user => {
    connection.query = util.promisify(connection.query)
    var id = request.body.id
    var red = request.body.red
@@ -659,11 +750,13 @@ app.post("/updateImgRed", function(request, response) {
    })
    */
 
-
+}, err => {
+   console.log("No such user. Error: " + err);
+ })
 
 })
 app.post("/updateItemDur", function(request, response) {
-
+   checkTokenWithPromise(request).then(async user => {
    var id = request.body.id
    var red = request.body.red
   if(red=="+"){
@@ -680,7 +773,9 @@ app.post("/updateItemDur", function(request, response) {
          response.json(true);
       }
    })
-
+}, err => {
+   console.log("No such user. Error: " + err);
+ })
 
 
 })

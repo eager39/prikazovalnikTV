@@ -29,6 +29,7 @@ export class HomeComponent implements OnInit {
      
      }
       private actionUrl: string=environment.baseUrl
+      
      private sub:any;
   data
   user
@@ -42,9 +43,10 @@ export class HomeComponent implements OnInit {
    this.myOptions = {
    
     };
+
  
    this.apiurl=this.actionUrl
- 
+ console.log(this.apiurl)
   this.interval = setInterval(() => {
     if(this.data.length=="0"){
       this.data=new Array()

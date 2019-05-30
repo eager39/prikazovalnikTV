@@ -4,8 +4,8 @@
 
 export const environment = {
   production: false,
-  baseUrl:"http://10.10.11.112:3000/",
-  angularUrl: "http://10.10.11.112:4200/"
+  baseUrl:"///"+window.location.hostname+":3000/",
+  angularUrl: "///"+window.location.hostname+":4200/"
 };
 
 /*

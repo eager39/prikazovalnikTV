@@ -34,13 +34,14 @@ export class AuthService {
 
    async login(logindata) {
       this.data=await this._dataService.add(logindata,"auth").toPromise()
-           
-      if(this.data.status==false){
-            
+          
+      if(this.data==false){
+            alert("napačno geslo ali uporabniško ime")
+
             }else{
             
             localStorage.setItem('currentUser', JSON.stringify(this.data));
-            this.router.navigate(["home"]);
+            this.router.navigate(["dodaj"]);
             this.route
 
             }
@@ -55,7 +56,7 @@ export class AuthService {
     logout() {
         // remove user from local storage to log user out
         localStorage.removeItem('currentUser');
-        this.router.navigate(['']); 
+        this.router.navigate(['login']); 
         
     }
 }

@@ -12,7 +12,7 @@ import { LoginComponent } from './login/login.component'
 import { AuthService } from './auth.service'
 import { ApiDataService } from './api-data.service'
 import { AuthGuard } from './auth.guard'
-
+import { JwtInterceptor } from './jwt';
 import { FormsModule }   from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
@@ -24,6 +24,7 @@ import { FlexLayoutModule} from '@angular/flex-layout';
 import { Pipe, PipeTransform } from '@angular/core';
 import { DomSanitizer} from '@angular/platform-browser';
 import { GoogleChartsModule } from 'angular-google-charts';
+
 
 @Pipe({ name: 'safe' })
 export class SafePipe implements PipeTransform {
@@ -61,7 +62,8 @@ export class SafePipe implements PipeTransform {
 
 
   ],
-  providers: [AuthService,ApiDataService,AuthGuard],
+  providers: [AuthService,ApiDataService,AuthGuard,
+    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
