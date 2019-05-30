@@ -348,7 +348,7 @@ var location=request.body.location
 connection.query = util.promisify(connection.query)
 var csql="SELECT count(id) as number FROM displays"
 var result=await connection.query(csql)
-if(result[0].number>=12){
+if(result[0].number>=conf.maxtv){
    response.json(false)
 }else{
    var sql = "INSERT INTO displays (name,location) VALUES (?,?)";
