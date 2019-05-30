@@ -87,12 +87,6 @@ this.getTv()
  
 
   async userData() {
-    
-    this.data =await this._dataService.get("data",{ 
-      params: {
-        id:this.tvid
-      } }).toPromise()
-     console.log(this.data)
     function compare(a, b) {
       // Use toUpperCase() to ignore character casing
       const genreA = a.ord;
@@ -106,10 +100,22 @@ this.getTv()
       }
       return comparison;
     }
+    try{
+      this.data =await this._dataService.get("data",{ 
+        params: {
+          id:this.tvid
+        } }).toPromise()
+       console.log(this.data)
     
-    this.data.sort(compare);
- 
-    console.log(this.data)
+      
+      this.data.sort(compare);
+   
+      console.log(this.data)
+    }catch(err){
+this.data=this.data
+console.log(err)
+    }
+    
   }
  
   logout(){
