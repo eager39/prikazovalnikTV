@@ -38,6 +38,7 @@ export class HomeComponent implements OnInit {
      tvid
      tvs
      myOptions
+     backupdata
    
   ngOnInit() {
    this.myOptions = {
@@ -111,8 +112,9 @@ this.getTv()
       this.data.sort(compare);
    
       console.log(this.data)
+      this.backupdata=this.data
     }catch(err){
-this.data=this.data
+this.data=this.backupdata
 console.log(err)
     }
     
