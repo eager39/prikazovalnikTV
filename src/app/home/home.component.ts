@@ -47,7 +47,7 @@ export class HomeComponent implements OnInit {
 
  
    this.apiurl=this.actionUrl
- console.log(this.apiurl)
+ 
   this.interval = setInterval(() => {
     if(this.data.length=="0"){
       this.data=new Array()
@@ -77,16 +77,16 @@ this.getTv()
   }
 
   async getTv() {
-    var data = await this._dataService.get("getTVs").toPromise()
-    this.tvs = data
+    try{
+      var data = await this._dataService.get("getTVs").toPromise()
+      this.tvs = data
+    }catch(err){
+      console.log(err)
+    }
+    
+    
    
  }
- getGraph(graph){
-   
- }
-
- 
-
   async userData() {
     function compare(a, b) {
       // Use toUpperCase() to ignore character casing
@@ -106,12 +106,12 @@ this.getTv()
         params: {
           id:this.tvid
         } }).toPromise()
-       console.log(this.data)
+       
     
       
       this.data.sort(compare);
    
-      console.log(this.data)
+    
       this.backupdata=this.data
     }catch(err){
 this.data=this.backupdata

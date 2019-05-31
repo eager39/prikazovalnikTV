@@ -78,9 +78,9 @@ export class UploadfilesComponent implements OnInit {
      for(var i=0;i<this.data[0].length;i++){
       this.columns.push(this.data[0][i])
      }
-     console.log(this.columns)
+     
      this.data.shift()
-    console.log(this.data)
+   
      
    };
    reader.readAsBinaryString(target.files[0]);
@@ -157,7 +157,7 @@ async addToMultipleTV(){
         data => {
           
            this.items = data
-           console.log(this.items)
+          
 
         }
      )
@@ -313,7 +313,7 @@ async editTVs(id){
         reader.readAsDataURL(file);
         reader.onload = () => {
         
-           console.log(file.type)
+           
            this.form.get('avatar').setValue({
               filename: file.name,
               filetype: file.type,
@@ -401,7 +401,7 @@ async editTVs(id){
         return false;
      }
      var data = await this._dataService.add(form, "addTVs").toPromise()
-     console.log(data)
+    
      if (data) {
         alert("uspešno dodana naprava")
         this.getTVs()
