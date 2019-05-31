@@ -157,6 +157,7 @@ async addToMultipleTV(){
         data => {
           
            this.items = data
+           console.log(this.items)
 
         }
      )
@@ -197,12 +198,13 @@ async editTVs(id){
      // this.allImageVideo()
      this.getTVs()
   }
-  deleteImg(id, name,type) {
+  deleteImg(id, name,type,display) {
 
      this._dataService.add({
         "id": id,
         "name": name,
-        "type":type
+        "type":type,
+        "display":display
      }, "deleteImg").subscribe(
         (val) => {
 

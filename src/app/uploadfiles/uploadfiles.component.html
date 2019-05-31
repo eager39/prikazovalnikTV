@@ -52,7 +52,7 @@ Ime grafa
            Ime: {{item.name |  slice:0:50}} ,<span class="test"> <button (click)="showOtherTV(item)" >Dodaj določenim</button> 
            
           </span>
-           <span class="test" >trajanje: {{item.duration/1000}}s,<button (click)="updateItemDur(item.id,'+',item.duration)" class="btn btn-success">+</button><button (click)="updateItemDur(item.id,'-',item.duration)" class="btn btn-success">-</button> Vrstni red:{{item.ord}} <button (click)="showhideImg(item)" class="btn btn-success">Prikazi/skrij</button><button (click)="deleteImg(item.id,item.name,item.type)" class="btn btn-success">zbrisi</button><button (click)="updateImgRed(item.id,'+')" class="btn btn-success">+</button><button (click)="updateImgRed(item.id,'-')" class="btn btn-success">-</button></span>
+           <span class="test" >trajanje: {{item.duration/1000}}s,<button (click)="updateItemDur(item.id,'+',item.duration)" class="btn btn-success">+</button><button (click)="updateItemDur(item.id,'-',item.duration)" class="btn btn-success">-</button> Vrstni red:{{item.ord}} <button (click)="showhideImg(item)" class="btn btn-success">Prikazi/skrij</button><button (click)="deleteImg(item.id,item.name,item.type,item.display)" class="btn btn-success">zbrisi</button><button (click)="updateImgRed(item.id,'+')" class="btn btn-success">+</button><button (click)="updateImgRed(item.id,'-')" class="btn btn-success">-</button></span>
           </li></ng-container>
       </ul>
      

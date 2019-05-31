@@ -42,7 +42,7 @@ export class AuthService {
             
             localStorage.setItem('currentUser', JSON.stringify(this.data));
             this.router.navigate(["dodaj"]);
-            this.route
+            
 
             }
          

@@ -42,7 +42,7 @@ const routes: Routes = [
   },
   {
     path:"**",
-    component:DisplayallComponent
+    component:HomeComponent
   }
 ]
 
