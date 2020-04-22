@@ -34,7 +34,7 @@ export class UploadfilesComponent implements OnInit {
    selectedid
    selectedtext
   
-  @ViewChild('fileInput') fileInput: ElementRef;
+  @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
   constructor(private fb: FormBuilder, private _dataService: ApiDataService, private auth: AuthService ) {
      this.createForm();
   }

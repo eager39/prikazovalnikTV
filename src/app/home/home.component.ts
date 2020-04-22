@@ -1,4 +1,4 @@
-import { Component, OnInit,ViewChild,ViewChildren } from '@angular/core';
+import { Component, OnInit,ViewChild,ViewChildren,AfterViewInit,ElementRef,ChangeDetectorRef,QueryList } from '@angular/core';
 import { ApiDataService } from '../api-data.service';
 import { AuthService } from '../auth.service'
 import { environment } from '../../environments/environment';
@@ -12,16 +12,21 @@ import { ActivatedRoute,Router, ActivationEnd } from '@angular/router';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
-  @ViewChild('asd') carousel: any;
-  @ViewChild("video") vid:any
-  @ViewChild('troll') hehe:any
+  @ViewChild('asd', { static: false }) carousel: any;
+  @ViewChild("video", { static: false }) vid:any
+  @ViewChild('troll', { static: false }) hehe:any
+  @ViewChildren("img") caro:any;
+ 
+
+  
   
   slike=[];
   constructor(
     private _dataService: ApiDataService,
     private auth:AuthService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private changeDetector : ChangeDetectorRef
    
 
    
@@ -75,6 +80,8 @@ if(this.route.params){
 this.getTv()
  
   }
+
+
 
   async getTv() {
     try{

@@ -26,7 +26,7 @@ const routes: Routes = [
   {
     path:"dodaj",
     component:UploadfilesComponent,
-    canActivate: [AuthGuard]
+    //canActivate: [AuthGuard]
    
     
   }, 
