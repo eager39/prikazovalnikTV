@@ -8,9 +8,11 @@
       "sourceRoot": "src",
       "projectType": "application",
       "prefix": "app",
-      "schematics": {"@schematics/angular:component": {
-        "styleext": "scss"
-      }},
+      "schematics": {
+        "@schematics/angular:component": {
+          "styleext": "scss"
+        }
+      },
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
@@ -26,15 +28,17 @@
             ],
             "styles": [
               "node_modules/@fortawesome/fontawesome-free/scss/fontawesome.scss",
-    "node_modules/@fortawesome/fontawesome-free/scss/solid.scss",
-    "node_modules/@fortawesome/fontawesome-free/scss/regular.scss",
-    "node_modules/@fortawesome/fontawesome-free/scss/brands.scss",
-    "node_modules/angular-bootstrap-md/scss/bootstrap/bootstrap.scss",
-    "node_modules/angular-bootstrap-md/scss/mdb-free.scss",
-    "src/styles.scss"
+              "node_modules/@fortawesome/fontawesome-free/scss/solid.scss",
+              "node_modules/@fortawesome/fontawesome-free/scss/regular.scss",
+              "node_modules/@fortawesome/fontawesome-free/scss/brands.scss",
+              "node_modules/angular-bootstrap-md/scss/bootstrap/bootstrap.scss",
+              "node_modules/angular-bootstrap-md/scss/mdb-free.scss",
+              "src/styles.scss"
             ],
-            "scripts": [ "node_modules/chart.js/dist/Chart.js",
-              "node_modules/hammerjs/hammer.min.js"]
+            "scripts": [
+              "node_modules/chart.js/dist/Chart.js",
+              "node_modules/hammerjs/hammer.min.js"
+            ]
           },
           "configurations": {
             "production": {
@@ -140,5 +144,8 @@
       }
     }
   },
-  "defaultProject": "evidenca-zaposlenih"
+  "defaultProject": "evidenca-zaposlenih",
+  "cli": {
+    "analytics": false
+  }
 }

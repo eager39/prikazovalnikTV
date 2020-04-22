@@ -117,6 +117,7 @@ this.getTv()
     
       
       this.data.sort(compare);
+      console.log(this.data)
    
     
       this.backupdata=this.data
@@ -157,12 +158,13 @@ this.c=0
      
       if(this.data.length>0 && item.activeSlide!=undefined){
          
-      //console.log(item.activeSlide)
+      console.log(item.activeSlide)
       //if( item.slides[item.activeSlide].el.nativeElement.children[0].className.includes("video")){
         if(this.data[item.activeSlide].type=="video"){
          
          this.carousel.interval=0
         let elem = <HTMLVideoElement> document.getElementById(item.activeSlide)
+        
         elem.play()
        
         
