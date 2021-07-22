@@ -42,7 +42,7 @@
     "simple-pdf-viewer": "^2.0.3",
     "tslib": "^1.11.1",
     "ui-carousel": "^0.2.0",
-    "xlsx": "^0.14.5",
+    "xlsx": "^0.17.0",
     "zone.js": "~0.9.1"
   },
   "devDependencies": {
